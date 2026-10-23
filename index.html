@@ -216,4 +216,502 @@
             <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">🏷️ 유형 필터:</span>
             <button type="button" data-cat-filter="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체유형</button>
             <button type="button" data-cat-filter="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap cursor-pointer">🔴 인물의 마음</button>
-            <button type="button" data-cat-filter="만약
+            <button type="button" data-cat-filter="만약에" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap cursor-pointer">🟢 만약에?</button>
+            <button type="button" data-cat-filter="현실" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">🔵 현실 세계 연결</button>
+            <button type="button" data-cat-filter="자유" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap cursor-pointer">🟡 자유 질문</button>
+          </div>
+          <div class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap ml-auto">
+            모인 질문 <span id="question-count" class="text-emerald-600 font-mono text-base">0</span>개
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Cards Grid (Post-it Board) -->
+      <div id="questions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic Post-it Cards -->
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    var memStorage = {};
+    function setStorageItem(key, val) {
+      try { localStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
+    }
+    function getStorageItem(key) {
+      try {
+        var v = localStorage.getItem(key);
+        if (v !== null) return v;
+      } catch (e) {}
+      return memStorage[key] || null;
+    }
+    function removeStorageItem(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+      delete memStorage[key];
+    }
+
+    function setSessionItem(key, val) {
+      try { sessionStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
+    }
+    function getSessionItem(key) {
+      try {
+        var v = sessionStorage.getItem(key);
+        if (v !== null) return v;
+      } catch (e) {}
+      return memStorage[key] || null;
+    }
+    function removeSessionItem(key) {
+      try { sessionStorage.removeItem(key); } catch (e) {}
+      delete memStorage[key];
+    }
+
+    var currentUser = { name: '', role: '', roomCode: '' };
+    var currentRoom = { roomTitle: '', bookTitle: '', code: '' };
+    var activeSecFilter = 'all';
+    var activeCatFilter = 'all';
+    var currentCategory = '인물';
+    var questions = [];
+
+    var sections = {
+      'section1': { name: '1) 7쪽~42쪽', color: 'bg-emerald-200 text-emerald-950 border-emerald-400' },
+      'section2': { name: '2) 43쪽~84쪽', color: 'bg-amber-200 text-amber-950 border-amber-400' },
+      'section3': { name: '3) 85쪽~107쪽', color: 'bg-blue-200 text-blue-950 border-blue-400' },
+      'section4': { name: '4) 108쪽~147쪽', color: 'bg-purple-200 text-purple-950 border-purple-400' },
+      'section5': { name: '5) 148쪽~170쪽', color: 'bg-rose-200 text-rose-950 border-rose-400' }
+    };
+
+    var categoryStyles = {
+      '인물': { tag: '🔴 인물의 마음', class: 'postit-red', topBar: 'bg-red-400', badgeBg: 'bg-red-200 text-red-950 border-red-300' },
+      '만약에': { tag: '🟢 만약에?', class: 'postit-green', topBar: 'bg-green-400', badgeBg: 'bg-green-200 text-green-950 border-green-300' },
+      '현실': { tag: '🔵 현실 세계 연결', class: 'postit-blue', topBar: 'bg-blue-400', badgeBg: 'bg-blue-200 text-blue-950 border-blue-300' },
+      '자유': { tag: '🟡 자유 질문', class: 'postit-yellow', topBar: 'bg-yellow-400', badgeBg: 'bg-yellow-200 text-yellow-950 border-yellow-300' }
+    };
+
+    function getRoomData(code) {
+      try {
+        var direct = getStorageItem('room_data_' + code);
+        if (direct) return JSON.parse(direct);
+
+        var registry = getStorageItem('bamboo_all_rooms');
+        if (registry) {
+          var rooms = JSON.parse(registry);
+          if (rooms[code]) return rooms[code];
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function saveRoomData(code, data) {
+      try {
+        setStorageItem('room_data_' + code, JSON.stringify(data));
+        var registry = {};
+        var storedRegistry = getStorageItem('bamboo_all_rooms');
+        if (storedRegistry) {
+          try { registry = JSON.parse(storedRegistry); } catch(e){}
+        }
+        registry[code] = data;
+        setStorageItem('bamboo_all_rooms', JSON.stringify(registry));
+      } catch (e) {}
+    }
+
+    function initApp() {
+      try {
+        var savedUser = getSessionItem('bamboo_current_user');
+        var savedRoom = getSessionItem('bamboo_current_room');
+        
+        if (savedUser && savedRoom) {
+          currentUser = JSON.parse(savedUser);
+          currentRoom = JSON.parse(savedRoom);
+          if (currentUser && currentUser.roomCode) {
+            loadRoomData();
+            return;
+          }
+        }
+      } catch (e) {}
+      
+      switchTab('student');
+    }
+
+    // DOM 안전 로드 완료 후 이벤트 바인딩
+    document.addEventListener('DOMContentLoaded', function() {
+      // 탭 전환 버튼 이벤트
+      document.getElementById('tab-student').addEventListener('click', function() { switchTab('student'); });
+      document.getElementById('tab-teacher-create').addEventListener('click', function() { switchTab('teacher-create'); });
+      document.getElementById('tab-teacher-login').addEventListener('click', function() { switchTab('teacher-login'); });
+
+      // 폼 제출 이벤트
+      document.getElementById('student-form').addEventListener('submit', handleStudentJoin);
+      document.getElementById('teacher-create-form').addEventListener('submit', handleTeacherCreate);
+      document.getElementById('teacher-login-form').addEventListener('submit', handleTeacherLogin);
+      document.getElementById('question-form').addEventListener('submit', handleAddQuestion);
+
+      // 상단바 버튼 이벤트
+      document.getElementById('btn-delete-room').addEventListener('click', deleteEntireRoom);
+      document.getElementById('btn-exit-room').addEventListener('click', exitRoom);
+
+      // 포스트잇 색상(카테고리) 버튼 이벤트
+      var catBtns = document.querySelectorAll('[data-cat-btn]');
+      catBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          selectCategory(btn.getAttribute('data-cat-btn'));
+        });
+      });
+
+      // 쪽수 필터 버튼 이벤트
+      var secFilterBtns = document.querySelectorAll('[data-sec-filter]');
+      secFilterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterBySection(btn.getAttribute('data-sec-filter'));
+        });
+      });
+
+      // 유형 필터 버튼 이벤트
+      var catFilterBtns = document.querySelectorAll('[data-cat-filter]');
+      catFilterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterByCategory(btn.getAttribute('data-cat-filter'));
+        });
+      });
+
+      initApp();
+    });
+
+    function switchTab(tab) {
+      var studentForm = document.getElementById('student-form');
+      var teacherCreateForm = document.getElementById('teacher-create-form');
+      var teacherLoginForm = document.getElementById('teacher-login-form');
+
+      var tabStudent = document.getElementById('tab-student');
+      var tabTeacherCreate = document.getElementById('tab-teacher-create');
+      var tabTeacherLogin = document.getElementById('tab-teacher-login');
+
+      if (studentForm) studentForm.classList.toggle('hidden', tab !== 'student');
+      if (teacherCreateForm) teacherCreateForm.classList.toggle('hidden', tab !== 'teacher-create');
+      if (teacherLoginForm) teacherLoginForm.classList.toggle('hidden', tab !== 'teacher-login');
+
+      if (tabStudent) tabStudent.className = tab === 'student' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
+      if (tabTeacherCreate) tabTeacherCreate.className = tab === 'teacher-create' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
+      if (tabTeacherLogin) tabTeacherLogin.className = tab === 'teacher-login' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
+    }
+
+    function generateCode() {
+      var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      var code = '';
+      for(var i=0; i<6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+
+    function handleStudentJoin(e) {
+      e.preventDefault();
+      var name = document.getElementById('student-name').value.trim();
+      var code = document.getElementById('student-code').value.trim().toUpperCase();
+
+      var roomInfo = getRoomData(code);
+      if (!roomInfo) {
+        alert('존재하지 않는 초대코드입니다. 선생님께 코드를 다시 확인해 주세요!');
+        return;
+      }
+
+      currentUser = { name: name, role: 'student', roomCode: code };
+      currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
+
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
+
+      loadRoomData();
+    }
+
+    function handleTeacherCreate(e) {
+      e.preventDefault();
+      var roomTitle = document.getElementById('teacher-room').value.trim();
+      var bookTitle = document.getElementById('teacher-book').value.trim();
+      var name = document.getElementById('teacher-name').value.trim();
+      var password = document.getElementById('teacher-password').value.trim();
+      var code = generateCode();
+
+      currentUser = { name: name + ' (선생님)', role: 'admin', roomCode: code };
+      currentRoom = { roomTitle: roomTitle, bookTitle: bookTitle, code: code };
+
+      saveRoomData(code, { roomTitle: roomTitle, bookTitle: bookTitle, password: password });
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
+
+      if (!getStorageItem('questions_' + code)) {
+        setStorageItem('questions_' + code, JSON.stringify([]));
+      }
+
+      loadRoomData();
+    }
+
+    function handleTeacherLogin(e) {
+      e.preventDefault();
+      var code = document.getElementById('login-code').value.trim().toUpperCase();
+      var password = document.getElementById('login-password').value.trim();
+
+      var roomInfo = getRoomData(code);
+      if (!roomInfo) {
+        alert('존재하지 않는 초대코드입니다.');
+        return;
+      }
+
+      if (roomInfo.password !== password) {
+        alert('관리자 비밀번호가 일치하지 않습니다.');
+        return;
+      }
+
+      currentUser = { name: '선생님 (관리자)', role: 'admin', roomCode: code };
+      currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
+
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
+
+      loadRoomData();
+    }
+
+    function loadRoomData() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('board-view').classList.remove('hidden');
+      document.getElementById('room-info-bar').classList.remove('hidden');
+
+      document.getElementById('bar-room-title').innerText = currentRoom.roomTitle;
+      document.getElementById('bar-book-title').innerText = currentRoom.bookTitle;
+      document.getElementById('bar-invite-code').innerText = currentRoom.code;
+      document.getElementById('bar-user-badge').innerText = currentUser.role === 'admin' ? '👑 관리자(선생님)' : '학생';
+
+      if (currentUser.role === 'admin') {
+        document.getElementById('btn-delete-room').classList.remove('hidden');
+      }
+
+      try {
+        var storedQ = getStorageItem('questions_' + currentRoom.code);
+        questions = storedQ ? JSON.parse(storedQ) : [];
+      } catch(e) {
+        questions = [];
+      }
+      renderQuestions();
+    }
+
+    function saveAndBroadcast() {
+      try {
+        setStorageItem('questions_' + currentRoom.code, JSON.stringify(questions));
+      } catch (e) {}
+    }
+
+    function exitRoom() {
+      removeSessionItem('bamboo_current_user');
+      removeSessionItem('bamboo_current_room');
+      location.reload();
+    }
+
+    function deleteEntireRoom() {
+      if (confirm('이 독서 대나무숲 방과 모든 질문을 완전히 삭제하시겠습니까?')) {
+        removeStorageItem('room_data_' + currentRoom.code);
+        removeStorageItem('questions_' + currentRoom.code);
+        exitRoom();
+      }
+    }
+
+    function selectCategory(cat) {
+      currentCategory = cat;
+      var btns = document.querySelectorAll('[data-cat-btn]');
+      btns.forEach(function(btn) {
+        var bCat = btn.getAttribute('data-cat-btn');
+        if(bCat === cat) {
+          var catClass = cat === '인물' ? 'bg-red-100 text-red-900 border-red-400' : cat === '만약에' ? 'bg-green-100 text-green-900 border-green-400' : cat === '현실' ? 'bg-blue-100 text-blue-900 border-blue-400' : 'bg-yellow-100 text-yellow-900 border-yellow-400';
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold ' + catClass + ' border-2 shadow-xs cursor-pointer';
+        } else {
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100 cursor-pointer';
+        }
+      });
+    }
+
+    function filterBySection(sec) {
+      activeSecFilter = sec;
+      var btns = document.querySelectorAll('[data-sec-filter]');
+      btns.forEach(function(btn) {
+        var btnSec = btn.getAttribute('data-sec-filter');
+        if (btnSec === sec) {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
+        } else {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
+        }
+      });
+      renderQuestions();
+    }
+
+    function filterByCategory(cat) {
+      activeCatFilter = cat;
+      var btns = document.querySelectorAll('[data-cat-filter]');
+      btns.forEach(function(btn) {
+        var btnCat = btn.getAttribute('data-cat-filter');
+        if (btnCat === cat) {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
+        } else {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
+        }
+      });
+      renderQuestions();
+    }
+
+    function handleAddQuestion(e) {
+      e.preventDefault();
+      var sec = document.getElementById('section-select').value;
+      var textInput = document.getElementById('question-text');
+      var text = textInput.value.trim();
+      if (!text) return;
+
+      var q = {
+        id: Date.now() + Math.random(),
+        author: currentUser.name,
+        sectionKey: sec,
+        category: currentCategory,
+        text: text,
+        time: '방금 전',
+        likes: 0,
+        likedUsers: [],
+        comments: []
+      };
+
+      questions.unshift(q);
+      saveAndBroadcast();
+      renderQuestions();
+      textInput.value = '';
+    }
+
+    window.editQuestion = function(id) {
+      var q = questions.find(function(item) { return item.id === id; });
+      if (!q) return;
+
+      var newText = prompt('학생의 질문 내용을 수정해 주세요 (맞춤법/표현 지도):', q.text);
+      if (newText !== null && newText.trim() !== '') {
+        q.text = newText.trim();
+        saveAndBroadcast();
+        renderQuestions();
+      }
+    };
+
+    window.deleteQuestion = function(id) {
+      if (confirm('이 질문을 삭제하시겠습니까?')) {
+        questions = questions.filter(function(item) { return item.id !== id; });
+        saveAndBroadcast();
+        renderQuestions();
+      }
+    };
+
+    window.toggleLike = function(id) {
+      var q = questions.find(function(item) { return item.id === id; });
+      if(q) {
+        if(!q.likedUsers) q.likedUsers = [];
+        var idx = q.likedUsers.indexOf(currentUser.name);
+        if(idx > -1) {
+          q.likedUsers.splice(idx, 1);
+          q.likes--;
+        } else {
+          q.likedUsers.push(currentUser.name);
+          q.likes++;
+        }
+        saveAndBroadcast();
+        renderQuestions();
+      }
+    };
+
+    window.addComment = function(id, event) {
+      event.preventDefault();
+      var input = document.getElementById('comment-input-' + id);
+      var text = input.value.trim();
+      if(!text) return;
+
+      var q = questions.find(function(item) { return item.id === id; });
+      if(q) {
+        q.comments.push({ id: Date.now() + Math.random(), author: currentUser.name, text: text });
+        saveAndBroadcast();
+        renderQuestions();
+      }
+    };
+
+    window.deleteComment = function(qId, cId) {
+      if (confirm('이 댓글을 삭제하시겠습니까?')) {
+        var q = questions.find(function(item) { return item.id === qId; });
+        if(q) {
+          q.comments = q.comments.filter(function(c) { return c.id !== cId; });
+          saveAndBroadcast();
+          renderQuestions();
+        }
+      }
+    };
+
+    function renderQuestions() {
+      var grid = document.getElementById('questions-grid');
+      if (!grid) return;
+      
+      var filtered = questions.filter(function(q) {
+        var secMatch = (activeSecFilter === 'all' || q.sectionKey === activeSecFilter);
+        var catMatch = (activeCatFilter === 'all' || q.category === activeCatFilter);
+        return secMatch && catMatch;
+      });
+      
+      document.getElementById('question-count').innerText = filtered.length;
+      grid.innerHTML = '';
+
+      filtered.forEach(function(q, idx) {
+        var secInfo = sections[q.sectionKey] || sections['section1'];
+        var catInfo = categoryStyles[q.category] || categoryStyles['자유'];
+        var isLiked = q.likedUsers && q.likedUsers.includes(currentUser.name);
+        var isAdmin = currentUser.role === 'admin';
+
+        var rotDeg = (idx % 3 === 0 ? -1.2 : idx % 3 === 1 ? 1.2 : -0.5);
+
+        var card = document.createElement('div');
+        card.style.transform = 'rotate(' + rotDeg + 'deg)';
+        card.className = 'postit-card ' + catInfo.class + ' border-2 rounded-2xl overflow-hidden flex flex-col justify-between relative';
+        
+        var commentsHtml = q.comments.map(function(c) {
+          return '<div class="text-xs sm:text-sm bg-white/90 p-2 rounded-lg border border-gray-200/80 flex justify-between items-center shadow-2xs">' +
+            '<div class="keep-all"><span class="font-bold text-emerald-900">' + c.author + ':</span> <span class="text-gray-800">' + c.text + '</span></div>' +
+            (isAdmin ? '<button type="button" onclick="deleteComment(' + q.id + ', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold cursor-pointer">×</button>' : '') +
+          '</div>';
+        }).join('');
+
+        if (q.comments.length === 0) {
+          commentsHtml = '<p class="text-xs sm:text-sm text-gray-400 text-center py-1">첫 댓글을 남겨보세요!</p>';
+        }
+
+        card.innerHTML = 
+          '<div class="' + catInfo.topBar + ' h-2.5 w-full opacity-80"></div>' +
+          '<div class="p-5 pt-3">' +
+            '<div class="flex flex-wrap justify-between items-center gap-1 mb-2">' +
+              '<div class="flex flex-wrap gap-1 items-center">' +
+                '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + secInfo.color + ' border truncate">' + secInfo.name + '</span>' +
+                '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + catInfo.badgeBg + ' border truncate">' + catInfo.tag + '</span>' +
+              '</div>' +
+              '<div class="flex items-center gap-1">' +
+                (isAdmin ? '<button type="button" onclick="editQuestion(' + q.id + ')" class="text-sm text-blue-700 hover:text-blue-900 font-bold px-1 cursor-pointer" title="질문 수정">✏️</button>' +
+                           '<button type="button" onclick="deleteQuestion(' + q.id + ')" class="text-sm text-red-600 hover:text-red-800 font-bold px-1 cursor-pointer" title="질문 삭제">🗑️</button>' : '') +
+              '</div>' +
+            '</div>' +
+            '<p class="text-gray-900 text-base sm:text-lg font-medium leading-relaxed my-3 whitespace-pre-wrap keep-all">"' + q.text + '"</p>' +
+          '</div>' +
+          '<div class="p-5 pt-0">' +
+            '<div class="flex justify-between items-center text-xs sm:text-sm text-gray-600 pt-2 border-t border-black/10 mb-3">' +
+              '<span class="font-bold text-gray-900">✍️ ' + q.author + '</span>' +
+              '<button type="button" onclick="toggleLike(' + q.id + ')" class="flex items-center gap-1 font-bold ' + (isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-500') + ' transition cursor-pointer">' +
+                '<i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart"></i>' +
+                '<span>공감 ' + q.likes + '</span>' +
+              '</button>' +
+            '</div>' +
+            '<div class="space-y-2 bg-white/70 rounded-xl p-2.5 border border-black/5">' +
+              '<div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">' + commentsHtml + '</div>' +
+              '<form onsubmit="addComment(' + q.id + ', event)" class="flex gap-1 mt-2">' +
+                '<input type="text" id="comment-input-' + q.id + '" placeholder="댓글 작성..." class="flex-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">' +
+                '<button type="submit" class="bg-emerald-700 text-white text-xs sm:text-sm px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 whitespace-nowrap shadow-xs cursor-pointer">등록</button>' +
+              '</form>' +
+            '</div>' +
+          '</div>';
+
+        grid.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
