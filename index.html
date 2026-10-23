@@ -1,775 +1,293 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>독서 대나무숲 🎋 - 초등 독서 토론 게시판</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Jua & Gowun Dodum -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>독서 대나무숲 - 함께 나누는 독서 질문 공간</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK (v9 호환 모드) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bamboo: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                        },
-                        pastel: {
-                            red: '#ffe4e6',     /* 인물의 마음 질문 - 분홍/레드 */
-                            redBorder: '#f43f5e',
-                            green: '#dcfce7',   /* 만약에? 질문 - 연두 */
-                            greenBorder: '#22c55e',
-                            blue: '#e0f2fe',    /* 현실 세계 연결 - 하늘 */
-                            blueBorder: '#0ea5e9',
-                            yellow: '#fef9c3',  /* 자유 질문 - 노랑 */
-                            yellowBorder: '#eab308',
-                        }
-                    },
-                    fontFamily: {
-                        jua: ['Jua', 'sans-serif'],
-                        gowun: ['Gowun Dodum', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Gowun Dodum', sans-serif;
-            word-break: keep-all;
-            background-color: #f4f8f3;
-            background-image: radial-gradient(#22c55e 0.75px, transparent 0.75px), radial-gradient(#22c55e 0.75px, #f4f8f3 0.75px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-            background-opacity: 0.15;
-        }
+  <style>
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      background-color: #f2f7f4;
+      word-break: keep-all; /* 외톨이 글자 방지 */
+    }
+    .font-jua {
+      font-family: 'Jua', sans-serif;
+    }
+    .bamboo-bg {
+      background-color: #e2efe8;
+      background-image: radial-gradient(#2d6a4f 0.5px, transparent 0.5px), radial-gradient(#2d6a4f 0.5px, #e2efe8 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+    }
+    .keep-all {
+      word-break: keep-all;
+    }
 
-        .heading-font {
-            font-family: 'Jua', sans-serif;
-        }
-
-        /* Post-it custom shadows and subtle rotate effects */
-        .postit {
-            box-shadow: 4px 5px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease-in-out;
-        }
-        .postit:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 6px 12px 20px rgba(0,0,0,0.12);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+    /* 파스텔 포스트잇 메모지 스타일 */
+    .postit-card {
+      box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+      border-bottom-right-radius: 18px 4px;
+      transition: all 0.2s ease-in-out;
+    }
+    .postit-card:hover {
+      transform: translateY(-4px) rotate(0deg) scale(1.01) !important;
+      box-shadow: 6px 12px 20px rgba(0, 0, 0, 0.12);
+    }
+    .postit-red { background-color: #ffe8e8; border-color: #fca5a5; }
+    .postit-green { background-color: #eafaf1; border-color: #86efac; }
+    .postit-blue { background-color: #eef7ff; border-color: #93c5fd; }
+    .postit-yellow { background-color: #fffde7; border-color: #fde047; }
+  </style>
 </head>
-<body class="min-h-screen text-slate-800 antialiased flex flex-col justify-between">
+<body class="bamboo-bg min-h-screen text-gray-800 flex flex-col text-base">
 
-    <!-- Auth Overlay (Nickname Entry Screen) -->
-    <div id="authOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-4 border-bamboo-500 text-center relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-bamboo-100 rounded-full -z-0"></div>
-            <div class="relative z-10">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-bamboo-100 rounded-full text-bamboo-600 mb-4 text-4xl shadow-inner">
-                    🎋
-                </div>
-                <h1 class="heading-font text-3xl sm:text-4xl text-bamboo-800 mb-2">독서 대나무숲</h1>
-                <p class="text-slate-600 mb-6 text-sm sm:text-base">친구들과 함께 책 속 질문을 자유롭게 나누어 보아요!</p>
-                
-                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-                    <div>
-                        <label for="nicknameInput" class="block text-left text-xs font-bold text-slate-500 mb-1 ml-1">사용할 닉네임 (이름 또는 별명)</label>
-                        <input type="text" id="nicknameInput" required maxlength="12" placeholder="예: 책먹는여우, 홍길동"
-                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl focus:border-bamboo-500 focus:outline-none text-center font-bold text-lg text-slate-800 shadow-sm transition">
-                    </div>
-                    <button type="submit" 
-                        class="w-full py-3.5 bg-bamboo-600 hover:bg-bamboo-700 active:scale-[0.98] text-white font-bold text-lg rounded-2xl shadow-lg shadow-bamboo-600/30 transition duration-150 heading-font flex items-center justify-center gap-2">
-                        <span>대나무숲 들어가기</span> 🎋
-                    </button>
-                </form>
-            </div>
+  <!-- Header -->
+  <header class="bg-emerald-800 text-white shadow-lg py-4 px-6 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">🎋</span>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-jua tracking-wide">독서 대나무숲</h1>
+          <p class="text-xs sm:text-sm text-emerald-200">생각을 자유롭게 털어놓는 우리들의 독서 질문 공간</p>
         </div>
-    </div>
-
-    <!-- Main Container -->
-    <div class="max-w-6xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-8 flex-grow">
-
-        <!-- App Header -->
-        <header class="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-6 mb-6 shadow-md border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3 sm:gap-4 text-center md:text-left">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-bamboo-500 text-white rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-bamboo-500/30 flex-shrink-0">
-                    🎋
-                </div>
-                <div>
-                    <div class="flex items-center gap-2 justify-center md:justify-start">
-                        <h1 class="heading-font text-2xl sm:text-3xl text-bamboo-800 tracking-tight">독서 대나무숲</h1>
-                        <span class="bg-bamboo-100 text-bamboo-700 text-xs font-bold px-2.5 py-0.5 rounded-full border border-bamboo-300">실시간 동기화 ON</span>
-                    </div>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">책을 읽으며 궁금했던 생각을 마음껏 이야기해 보세요!</p>
-                </div>
-            </div>
-
-            <!-- User Info & Admin Control Bar -->
-            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                <!-- User Badge -->
-                <div class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="currentUserDisplay">로그인 필요</span>
-                    <button onclick="changeNickname()" class="text-slate-400 hover:text-slate-600 ml-1 text-xs underline">변경</button>
-                </div>
-
-                <!-- Admin Mode Toggle Button -->
-                <button id="adminBtn" onclick="toggleAdminPrompt()" 
-                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-2xl text-xs sm:text-sm transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-user-shield text-xs"></i>
-                    <span id="adminBtnText">관리자 모드</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Workspace (Grid) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- Left Panel: Question Input Form -->
-            <div class="lg:col-span-5 space-y-6">
-                <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border border-slate-100 sticky top-4">
-                    <h2 class="heading-font text-xl text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-bamboo-600"></i>
-                        <span>새 생각/질문 포스트잇</span>
-                    </h2>
-
-                    <form id="postForm" onsubmit="createPost(event)" class="space-y-4">
-                        <!-- 1. Section Selector -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">
-                                <i class="fa-solid fa-book-open text-bamboo-500 mr-1"></i>책 구간 선택
-                            </label>
-                            <select id="sectionSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 font-medium focus:outline-none focus:border-bamboo-500 transition">
-                                <option value="1">1. 깨진 삼각형, 새사람, 센터, 북소리, 대숲1 (7쪽~42쪽)</option>
-                                <option value="2">2. 사고, 밍밍한 망고, 목격자, 신발장, 대숲2 (43쪽~84쪽)</option>
-                                <option value="3">3. 그늘 속으로, 진흙탕 (85쪽~107쪽)</option>
-                                <option value="4">4. 흉터의 의미, 내가 만든 가시, 대숲3, 떨리는 손, 남겨 둔 것 (108쪽~147쪽)</option>
-                                <option value="5">5. 새잎, 햇빛 (148쪽~170쪽)</option>
-                            </select>
-                        </div>
-
-                        <!-- 2. Question Category Buttons -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">
-                                <i class="fa-solid fa-tags text-bamboo-500 mr-1"></i>질문 유형 선택
-                            </label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button type="button" onclick="selectCategory('red')" id="catBtn-red"
-                                    class="cat-btn px-3 py-2 rounded-xl text-xs font-bold text-left border-2 transition flex items-center gap-1.5 bg-pastel-red/50 border-pastel-redBorder text-slate-800">
-                                    <span>🔴</span> 인물의 마음 질문
-                                </button>
-                                <button type="button" onclick="selectCategory('green')" id="catBtn-green"
-                                    class="cat-btn px-3 py-2 rounded-xl text-xs font-bold text-left border-2 transition flex items-center gap-1.5 bg-pastel-green/50 border-transparent text-slate-600 opacity-70">
-                                    <span>🟢</span> 만약에? 질문
-                                </button>
-                                <button type="button" onclick="selectCategory('blue')" id="catBtn-blue"
-                                    class="cat-btn px-3 py-2 rounded-xl text-xs font-bold text-left border-2 transition flex items-center gap-1.5 bg-pastel-blue/50 border-transparent text-slate-600 opacity-70">
-                                    <span>🔵</span> 현실 세계 연결
-                                </button>
-                                <button type="button" onclick="selectCategory('yellow')" id="catBtn-yellow"
-                                    class="cat-btn px-3 py-2 rounded-xl text-xs font-bold text-left border-2 transition flex items-center gap-1.5 bg-pastel-yellow/50 border-transparent text-slate-600 opacity-70">
-                                    <span>🟡</span> 자유 질문
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 3. Content Textarea -->
-                        <div>
-                            <label for="postContent" class="block text-xs font-bold text-slate-600 mb-1.5">
-                                <i class="fa-solid fa-comment-dots text-bamboo-500 mr-1"></i>질문 내용
-                            </label>
-                            <textarea id="postContent" required rows="4" maxlength="300" placeholder="친구들과 나누고 싶은 질문이나 생각을 자유롭게 써보세요..."
-                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-bamboo-500 focus:bg-white transition resize-none"></textarea>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" 
-                            class="w-full py-3 bg-bamboo-600 hover:bg-bamboo-700 active:scale-[0.99] text-white font-bold text-base rounded-2xl shadow-md shadow-bamboo-600/20 transition heading-font flex items-center justify-center gap-2">
-                            <span>포스트잇 붙이기</span> 📌
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right Panel: Filters & Post-it Wall -->
-            <div class="lg:col-span-7 space-y-4">
-
-                <!-- Filter Controls -->
-                <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100 space-y-3">
-                    <!-- Section Filter -->
-                    <div>
-                        <div class="text-xs font-bold text-slate-500 mb-1.5 flex items-center justify-between">
-                            <span><i class="fa-solid fa-filter mr-1"></i>구간별 보기</span>
-                            <span id="postCountBadge" class="text-bamboo-600 font-extrabold">전체 0개</span>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button onclick="filterBySection('all')" id="secFilter-all" class="sec-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-bamboo-600 text-white">전체 보기</button>
-                            <button onclick="filterBySection('1')" id="secFilter-1" class="sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">1구간</button>
-                            <button onclick="filterBySection('2')" id="secFilter-2" class="sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">2구간</button>
-                            <button onclick="filterBySection('3')" id="secFilter-3" class="sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">3구간</button>
-                            <button onclick="filterBySection('4')" id="secFilter-4" class="sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">4구간</button>
-                            <button onclick="filterBySection('5')" id="secFilter-5" class="sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">5구간</button>
-                        </div>
-                    </div>
-
-                    <!-- Category Filter -->
-                    <div class="pt-2 border-t border-slate-100">
-                        <div class="flex flex-wrap gap-1.5">
-                            <button onclick="filterByCategory('all')" id="catFilter-all" class="cat-filter-btn text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-700 text-white">모든 질문</button>
-                            <button onclick="filterByCategory('red')" id="catFilter-red" class="cat-filter-btn text-xs font-bold px-2.5 py-1 rounded-lg bg-red-100 text-red-700 hover:bg-red-200">🔴 인물의 마음</button>
-                            <button onclick="filterByCategory('green')" id="catFilter-green" class="cat-filter-btn text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200">🟢 만약에?</button>
-                            <button onclick="filterByCategory('blue')" id="catFilter-blue" class="cat-filter-btn text-xs font-bold px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200">🔵 현실 세계</button>
-                            <button onclick="filterByCategory('yellow')" id="catFilter-yellow" class="cat-filter-btn text-xs font-bold px-2.5 py-1 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200">🟡 자유 질문</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Post-It Board Grid -->
-                <div id="postsGrid" class="space-y-4">
-                    <!-- Dynamic Post Cards will render here -->
-                </div>
-
-                <!-- Empty State Message -->
-                <div id="emptyState" class="hidden bg-white/80 rounded-3xl p-10 text-center border-2 border-dashed border-slate-200">
-                    <div class="text-4xl mb-2">🍃</div>
-                    <p class="heading-font text-lg text-slate-600">아직 붙여진 포스트잇이 없습니다!</p>
-                    <p class="text-xs text-slate-400 mt-1">왼쪽 입력 창에서 책을 읽고 궁금한 생각을 첫 번째로 올려보세요.</p>
-                </div>
-
-            </div>
+      </div>
+      <div id="room-info-bar" class="hidden flex flex-wrap items-center justify-center gap-3 bg-emerald-900/80 px-4 py-2 rounded-xl border border-emerald-600">
+        <div class="text-sm sm:text-base">
+          <span class="text-emerald-300 font-bold">참가자:</span>
+          <span class="text-white font-semibold" id="bar-user-badge">닉네임</span>
         </div>
+        <button type="button" id="btn-admin-toggle" onclick="toggleAdminMode()" class="text-xs sm:text-sm bg-amber-500 hover:bg-amber-600 px-3 py-1 rounded text-emerald-950 transition font-bold cursor-pointer shadow">
+          <i class="fa-solid fa-lock mr-1" id="admin-icon"></i><span id="admin-btn-text">관리자 모드</span>
+        </button>
+        <button type="button" onclick="exitRoom()" class="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i>닉네임 변경
+        </button>
+      </div>
     </div>
+  </header>
 
-    <!-- Edit Post Modal -->
-    <div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 space-y-4">
-            <h3 class="heading-font text-xl text-slate-800 flex items-center gap-2">
-                ✏️ 포스트잇 수정하기 (관리자)
-            </h3>
-            <input type="hidden" id="editPostId">
-            <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">구간 선택</label>
-                <select id="editSectionSelect" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium">
-                    <option value="1">1. 깨진 삼각형, 새사람, 센터, 북소리, 대숲1 (7쪽~42쪽)</option>
-                    <option value="2">2. 사고, 밍밍한 망고, 목격자, 신발장, 대숲2 (43쪽~84쪽)</option>
-                    <option value="3">3. 그늘 속으로, 진흙탕 (85쪽~107쪽)</option>
-                    <option value="4">4. 흉터의 의미, 내가 만든 가시, 대숲3, 떨리는 손, 남겨 둔 것 (108쪽~147쪽)</option>
-                    <option value="5">5. 새잎, 햇빛 (148쪽~170쪽)</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">질문 내용</label>
-                <textarea id="editPostContent" rows="4" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm resize-none"></textarea>
-            </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">취소</button>
-                <button onclick="savePostEdit()" class="px-4 py-2 bg-bamboo-600 text-white font-bold rounded-xl text-xs">저장하기</button>
-            </div>
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
+
+    <!-- AUTH VIEW (닉네임 입력) -->
+    <div id="auth-view" class="max-w-md mx-auto my-12 bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-2 border-emerald-200">
+      <div class="text-center mb-8">
+        <span class="text-6xl inline-block mb-2">🎋</span>
+        <h2 class="text-2xl sm:text-3xl font-jua text-emerald-900">독서 대나무숲 입장하기</h2>
+        <p class="text-sm sm:text-base text-gray-500 mt-1">질문으로 깊어지는 생각의 숲</p>
+      </div>
+
+      <form id="student-form" class="space-y-5">
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-2">본인의 이름 또는 닉네임을 입력해 주세요</label>
+          <input type="text" id="student-name" required placeholder="예: 5학년 김독서" class="w-full px-4 py-3.5 rounded-xl border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base">
         </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
+          대나무숲 들어가기 🎋
+        </button>
+      </form>
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-12 py-4 bg-white/60 border-t border-slate-200 text-center text-xs text-slate-500">
-        <p>독서 대나무숲 🎋 | 초등 독서 활동 실시간 게시판</p>
-    </footer>
+    <!-- BOARD VIEW -->
+    <div id="board-view" class="hidden space-y-6">
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl z-50 transition-all duration-300 transform translate-y-20 opacity-0 flex items-center gap-2 text-sm font-medium">
-        <span id="toastMsg">알림 메시지</span>
+      <!-- Question Input Form Box -->
+      <div class="bg-white/95 rounded-2xl p-5 sm:p-6 shadow-lg border border-emerald-200">
+        <h3 class="text-base sm:text-lg font-jua text-emerald-900 mb-3 flex items-center gap-2">
+          <span>✍️</span> 읽은 단원(쪽수)과 질문 유형을 선택하고 독서 질문을 포스트잇으로 붙여보세요!
+        </h3>
+        <form id="question-form" class="space-y-4">
+          
+          <!-- Section Selector Dropdown -->
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">📖 질문할 책의 부분 선택:</label>
+            <select id="section-select" required class="w-full p-3 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 font-bold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="section1">1) 깨진 삼각형, 새사람, 센터, 북소리, 대숲1 (7쪽~42쪽)</option>
+              <option value="section2">2) 사고, 밍밍한 망고, 목격자, 신발장, 대숲2 (43쪽~84쪽)</option>
+              <option value="section3">3) 그늘 속으로, 진흙탕 (85쪽~107쪽)</option>
+              <option value="section4">4) 흉터의 의미, 내가 만든 가시, 대숲3, 떨리는 손, 남겨 둔 것 (108쪽~147쪽)</option>
+              <option value="section5">5) 새잎, 햇빛 (148쪽~170쪽)</option>
+            </select>
+          </div>
+
+          <!-- Pastel Question Category Buttons -->
+          <div>
+            <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1.5">🏷️ 질문 유형 (포스트잇 색상 선택):</label>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" data-cat-btn="인물" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-red-100 text-red-900 border-2 border-red-400 shadow-xs cursor-pointer">🔴 인물의 마음 질문 (분홍)</button>
+              <button type="button" data-cat-btn="만약에" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-green-50 cursor-pointer">🟢 만약에? 질문 (연두)</button>
+              <button type="button" data-cat-btn="현실" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-blue-50 cursor-pointer">🔵 현실 세계 연결 (하늘)</button>
+              <button type="button" data-cat-btn="자유" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-yellow-50 cursor-pointer">🟡 자유 질문 (노랑)</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2 pt-1">
+            <textarea id="question-text" required rows="2" placeholder="책을 읽으며 궁금했던 점이나 친구들과 함께 나누고 싶은 질문을 적어보세요." class="flex-1 p-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base resize-none"></textarea>
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-jua px-6 py-3 sm:py-0 rounded-xl shadow-md transition flex items-center justify-center text-base sm:text-lg whitespace-nowrap cursor-pointer">
+              포스트잇 붙이기 📌
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="bg-white/90 p-4 rounded-2xl border border-emerald-200 space-y-3">
+        <!-- 1) 쪽수 필터 -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1">
+          <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">📖 쪽수 필터:</span>
+          <button type="button" data-sec-filter="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체보기</button>
+          <button type="button" data-sec-filter="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap cursor-pointer">1) 7~42쪽</button>
+          <button type="button" data-sec-filter="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap cursor-pointer">2) 43~84쪽</button>
+          <button type="button" data-sec-filter="section3" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">3) 85~107쪽</button>
+          <button type="button" data-sec-filter="section4" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap cursor-pointer">4) 108~147쪽</button>
+          <button type="button" data-sec-filter="section5" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap cursor-pointer">5) 148~170쪽</button>
+        </div>
+
+        <!-- 2) 질문 유형 필터 -->
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-emerald-100">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1">
+            <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">🏷️ 유형 필터:</span>
+            <button type="button" data-cat-filter="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체유형</button>
+            <button type="button" data-cat-filter="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap cursor-pointer">🔴 인물의 마음</button>
+            <button type="button" data-cat-filter="만약에" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap cursor-pointer">🟢 만약에?</button>
+            <button type="button" data-cat-filter="현실" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">🔵 현실 세계 연결</button>
+            <button type="button" data-cat-filter="자유" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap cursor-pointer">🟡 자유 질문</button>
+          </div>
+          <div class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap ml-auto">
+            모인 질문 <span id="question-count" class="text-emerald-600 font-mono text-base">0</span>개
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Cards Grid (Post-it Board) -->
+      <div id="questions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic Post-it Cards -->
+      </div>
     </div>
 
-    <!-- Application JavaScript Logic -->
-    <script>
-        // --- CONSTANTS & CONFIGURATION ---
-        const STORAGE_KEY = 'bamboo_reading_posts_v2';
-        const USER_KEY = 'bamboo_reading_nickname';
-        const CHANNEL_NAME = 'bamboo_sync_channel';
+  </main>
 
-        const SECTIONS = {
-            '1': '1. 깨진 삼각형, 새사람, 센터, 북소리, 대숲1 (7쪽~42쪽)',
-            '2': '2. 사고, 밍밍한 망고, 목격자, 신발장, 대숲2 (43쪽~84쪽)',
-            '3': '3. 그늘 속으로, 진흙탕 (85쪽~107쪽)',
-            '4': '4. 흉터의 의미, 내가 만든 가시, 대숲3, 떨리는 손, 남겨 둔 것 (108쪽~147쪽)',
-            '5': '5. 새잎, 햇빛 (148쪽~170쪽)'
-        };
+  <script>
+    // 선생님의 실제 파이어베이스 설정값 적용
+    var firebaseConfig = {
+      apiKey: "AIzaSyDJvNknk2h_gzRiyXU4NtFMP3x9Gy3Ph-4",
+      authDomain: "yowonssam.firebaseapp.com",
+      projectId: "yowonssam",
+      storageBucket: "yowonssam.firebasestorage.app",
+      messagingSenderId: "862947533694",
+      appId: "1:862947533694:web:694bb1c09c01cd05b7092f",
+      measurementId: "G-W50B41EYLR"
+    };
 
-        const CATEGORIES = {
-            'red': { name: '인물의 마음 질문', emoji: '🔴', bg: 'bg-pastel-red', border: 'border-pastel-redBorder', text: 'text-rose-900' },
-            'green': { name: '만약에? 질문', emoji: '🟢', bg: 'bg-pastel-green', border: 'border-pastel-greenBorder', text: 'text-emerald-900' },
-            'blue': { name: '현실 세계 연결', emoji: '🔵', bg: 'bg-pastel-blue', border: 'border-pastel-blueBorder', text: 'text-sky-900' },
-            'yellow': { name: '자유 질문', emoji: '🟡', bg: 'bg-pastel-yellow', border: 'border-pastel-yellowBorder', text: 'text-yellow-950' }
-        };
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
 
-        // --- STATE VARIABLES ---
-        let posts = [];
-        let currentUser = '';
-        let selectedCategory = 'red';
-        let currentSectionFilter = 'all';
-        let currentCategoryFilter = 'all';
-        let isAdmin = false;
+    var currentUser = { name: '' };
+    var isAdminMode = false;
+    var adminPassword = '2026'; // 관리자 비밀번호
+    var activeSecFilter = 'all';
+    var activeCatFilter = 'all';
+    var currentCategory = '인물';
+    var questions = [];
+    var unsubscribe = null;
 
-        // Broadcast Channel for Real-time Tab Synchronization
-        let broadcastChannel = null;
-        if ('BroadcastChannel' in window) {
-            broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
-            broadcastChannel.onmessage = (event) => {
-                if (event.data && event.data.type === 'SYNC_POSTS') {
-                    posts = event.data.posts;
-                    renderPosts();
-                }
-            };
+    var sections = {
+      'section1': { name: '1) 7쪽~42쪽', color: 'bg-emerald-200 text-emerald-950 border-emerald-400' },
+      'section2': { name: '2) 43쪽~84쪽', color: 'bg-amber-200 text-amber-950 border-amber-400' },
+      'section3': { name: '3) 85쪽~107쪽', color: 'bg-blue-200 text-blue-950 border-blue-400' },
+      'section4': { name: '4) 108쪽~147쪽', color: 'bg-purple-200 text-purple-950 border-purple-400' },
+      'section5': { name: '5) 148쪽~170쪽', color: 'bg-rose-200 text-rose-950 border-rose-400' }
+    };
+
+    var categoryStyles = {
+      '인물': { tag: '🔴 인물의 마음', class: 'postit-red', topBar: 'bg-red-400', badgeBg: 'bg-red-200 text-red-950 border-red-300' },
+      '만약에': { tag: '🟢 만약에?', class: 'postit-green', topBar: 'bg-green-400', badgeBg: 'bg-green-200 text-green-950 border-green-300' },
+      '현실': { tag: '🔵 현실 세계 연결', class: 'postit-blue', topBar: 'bg-blue-400', badgeBg: 'bg-blue-200 text-blue-950 border-blue-300' },
+      '자유': { tag: '🟡 자유 질문', class: 'postit-yellow', topBar: 'bg-yellow-400', badgeBg: 'bg-yellow-200 text-yellow-950 border-yellow-300' }
+    };
+
+    function initApp() {
+      try {
+        var savedUser = sessionStorage.getItem('bamboo_student_name');
+        if (savedUser) {
+          currentUser.name = savedUser;
+          loadBoardView();
+          return;
         }
+      } catch (e) {}
+      
+      document.getElementById('auth-view').classList.remove('hidden');
+      document.getElementById('board-view').classList.add('hidden');
+      document.getElementById('room-info-bar').classList.add('hidden');
+    }
 
-        // Window Storage Event Listener (Fallback / Secondary Tab Sync)
-        window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY) {
-                loadPostsFromStorage();
-                renderPosts();
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('student-form').addEventListener('submit', handleStudentJoin);
+      document.getElementById('question-form').addEventListener('submit', handleAddQuestion);
+
+      var catBtns = document.querySelectorAll('[data-cat-btn]');
+      catBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          selectCategory(btn.getAttribute('data-cat-btn'));
         });
+      });
 
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            // Check stored user nickname
-            const storedUser = localStorage.getItem(USER_KEY);
-            if (storedUser) {
-                currentUser = storedUser;
-                document.getElementById('currentUserDisplay').innerText = currentUser;
-                document.getElementById('authOverlay').classList.add('hidden');
-            }
+      var secFilterBtns = document.querySelectorAll('[data-sec-filter]');
+      secFilterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterBySection(btn.getAttribute('data-sec-filter'));
+        });
+      });
 
-            // Load Initial Data
-            loadPostsFromStorage();
+      var catFilterBtns = document.querySelectorAll('[data-cat-filter]');
+      catFilterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterByCategory(btn.getAttribute('data-cat-filter'));
+        });
+      });
 
-            // Seed initial mock sample data if completely empty
-            if (posts.length === 0) {
-                posts = getInitialSampleData();
-                savePostsToStorage(true);
-            } else {
-                renderPosts();
-            }
-        };
+      initApp();
+    });
 
-        // --- AUTH & USER MANAGEMENT ---
-        function handleLogin(e) {
-            e.preventDefault();
-            const input = document.getElementById('nicknameInput').value.trim();
-            if (!input) return;
+    function handleStudentJoin(e) {
+      e.preventDefault();
+      var name = document.getElementById('student-name').value.trim();
+      if (!name) return;
 
-            currentUser = input;
-            localStorage.setItem(USER_KEY, currentUser);
-            document.getElementById('currentUserDisplay').innerText = currentUser;
-            document.getElementById('authOverlay').classList.add('hidden');
-            showToast(`반갑습니다, ${currentUser}님! 🎋`);
-        }
+      currentUser.name = name;
+      try {
+        sessionStorage.setItem('bamboo_student_name', name);
+      } catch (e) {}
+      loadBoardView();
+    }
 
-        function changeNickname() {
-            document.getElementById('nicknameInput').value = currentUser;
-            document.getElementById('authOverlay').classList.remove('hidden');
-        }
+    function loadBoardView() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('board-view').classList.remove('hidden');
+      document.getElementById('room-info-bar').classList.remove('hidden');
+      document.getElementById('bar-user-badge').innerText = currentUser.name;
 
-        // --- ADMIN MODE ---
-        function toggleAdminPrompt() {
-            if (isAdmin) {
-                isAdmin = false;
-                document.getElementById('adminBtn').className = "bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-2xl text-xs sm:text-sm transition flex items-center gap-1.5";
-                document.getElementById('adminBtnText').innerText = "관리자 모드";
-                showToast("관리자 모드가 해제되었습니다.");
-                renderPosts();
-            } else {
-                const password = prompt("관리자 비밀번호를 입력하세요:");
-                if (password === '2026') {
-                    isAdmin = true;
-                    document.getElementById('adminBtn').className = "bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-2xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-md shadow-amber-500/30";
-                    document.getElementById('adminBtnText').innerText = "관리자 ON (2026)";
-                    showToast("관리자 권한이 승인되었습니다. ✏️🗑️");
-                    renderPosts();
-                } else if (password !== null) {
-                    alert("비밀번호가 올바르지 않습니다.");
-                }
-            }
-        }
-
-        // --- CATEGORY & FILTER SELECTION ---
-        function selectCategory(catKey) {
-            selectedCategory = catKey;
-            Object.keys(CATEGORIES).forEach(key => {
-                const btn = document.getElementById(`catBtn-${key}`);
-                if (key === catKey) {
-                    btn.classList.add('border-' + CATEGORIES[key].border.replace('border-', ''), 'opacity-100');
-                    btn.classList.remove('border-transparent', 'opacity-70');
-                } else {
-                    btn.classList.remove('border-pastel-redBorder', 'border-pastel-greenBorder', 'border-pastel-blueBorder', 'border-pastel-yellowBorder', 'opacity-100');
-                    btn.classList.add('border-transparent', 'opacity-70');
-                }
-            });
-        }
-
-        function filterBySection(secKey) {
-            currentSectionFilter = secKey;
-            document.querySelectorAll('.sec-filter-btn').forEach(btn => {
-                btn.className = "sec-filter-btn text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200";
-            });
-            const activeBtn = document.getElementById(`secFilter-${secKey}`);
-            if (activeBtn) {
-                activeBtn.className = "sec-filter-btn text-xs font-bold px-3 py-1.5 rounded-xl bg-bamboo-600 text-white shadow-sm";
-            }
-            renderPosts();
-        }
-
-        function filterByCategory(catKey) {
-            currentCategoryFilter = catKey;
-            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
-                btn.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-800');
-            });
-            const activeBtn = document.getElementById(`catFilter-${catKey}`);
-            if (activeBtn) {
-                activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-slate-800');
-            }
-            renderPosts();
-        }
-
-        // --- CRUD & STORAGE LOGIC ---
-        function loadPostsFromStorage() {
-            try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                posts = data ? JSON.parse(data) : [];
-            } catch (err) {
-                console.error("Failed to load posts", err);
-                posts = [];
-            }
-        }
-
-        function savePostsToStorage(broadcast = true) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-                if (broadcast && broadcastChannel) {
-                    broadcastChannel.postMessage({ type: 'SYNC_POSTS', posts: posts });
-                }
-                renderPosts();
-            } catch (err) {
-                console.error("Failed to save posts", err);
-            }
-        }
-
-        function createPost(e) {
-            e.preventDefault();
-            if (!currentUser) {
-                document.getElementById('authOverlay').classList.remove('hidden');
-                return;
-            }
-
-            const section = document.getElementById('sectionSelect').value;
-            const content = document.getElementById('postContent').value.trim();
-
-            if (!content) return;
-
-            const newPost = {
-                id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                author: currentUser,
-                section: section,
-                category: selectedCategory,
-                content: content,
-                likes: 0,
-                likedBy: [],
-                comments: [],
-                createdAt: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
-            };
-
-            posts.unshift(newPost);
-            savePostsToStorage(true);
-
-            // Reset Form
-            document.getElementById('postContent').value = '';
-            showToast('포스트잇이 대나무숲에 붙었습니다! 📌');
-        }
-
-        function toggleLike(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            if (!post.likedBy) post.likedBy = [];
-
-            const userIndex = post.likedBy.indexOf(currentUser);
-            if (userIndex === -1) {
-                post.likedBy.push(currentUser);
-                post.likes = (post.likes || 0) + 1;
-                showToast('공감을 표시했습니다! ❤️');
-            } else {
-                post.likedBy.splice(userIndex, 1);
-                post.likes = Math.max(0, (post.likes || 0) - 1);
-            }
-
-            savePostsToStorage(true);
-        }
-
-        function addComment(postId) {
-            const input = document.getElementById(`commentInput-${postId}`);
-            if (!input) return;
-            const text = input.value.trim();
-            if (!text) return;
-
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            if (!post.comments) post.comments = [];
-
-            post.comments.push({
-                id: 'cmt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                author: currentUser,
-                text: text,
-                createdAt: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
-            });
-
-            input.value = '';
-            savePostsToStorage(true);
-            showToast('댓글이 달렸습니다! 💬');
-        }
-
-        function deleteComment(postId, commentId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post || !post.comments) return;
-
-            post.comments = post.comments.filter(c => c.id !== commentId);
-            savePostsToStorage(true);
-            showToast('댓글을 삭제했습니다.');
-        }
-
-        function deletePost(postId) {
-            if (!confirm('이 포스트잇을 정말 삭제하시겠습니까?')) return;
-            posts = posts.filter(p => p.id !== postId);
-            savePostsToStorage(true);
-            showToast('포스트잇이 삭제되었습니다.');
-        }
-
-        // --- EDIT MODAL (ADMIN) ---
-        function openEditModal(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            document.getElementById('editPostId').value = post.id;
-            document.getElementById('editSectionSelect').value = post.section;
-            document.getElementById('editPostContent').value = post.content;
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        function savePostEdit() {
-            const id = document.getElementById('editPostId').value;
-            const post = posts.find(p => p.id === id);
-            if (!post) return;
-
-            post.section = document.getElementById('editSectionSelect').value;
-            post.content = document.getElementById('editPostContent').value.trim();
-
-            savePostsToStorage(true);
-            closeEditModal();
-            showToast('포스트잇이 수정되었습니다.');
-        }
-
-        // --- RENDER LOGIC ---
-        function renderPosts() {
-            const grid = document.getElementById('postsGrid');
-            const emptyState = document.getElementById('emptyState');
-            grid.innerHTML = '';
-
-            // Filter logic
-            let filtered = posts.filter(post => {
-                const matchSec = (currentSectionFilter === 'all' || post.section === currentSectionFilter);
-                const matchCat = (currentCategoryFilter === 'all' || post.category === currentCategoryFilter);
-                return matchSec && matchCat;
-            });
-
-            document.getElementById('postCountBadge').innerText = `전체 ${filtered.length}개`;
-
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            filtered.forEach(post => {
-                const catInfo = CATEGORIES[post.category] || CATEGORIES['yellow'];
-                const sectionTitle = SECTIONS[post.section] || SECTIONS['1'];
-                const isLiked = post.likedBy && post.likedBy.includes(currentUser);
-
-                const card = document.createElement('div');
-                card.className = `postit ${catInfo.bg} rounded-3xl p-5 border-2 ${catInfo.border} relative flex flex-col justify-between`;
-
-                // Header HTML (Author, Time, Admin options)
-                let adminControls = '';
-                if (isAdmin || post.author === currentUser) {
-                    adminControls = `
-                        <div class="flex items-center gap-1.5 ml-auto">
-                            ${isAdmin ? `<button onclick="openEditModal('${post.id}')" title="수정" class="p-1 hover:bg-black/10 rounded-lg text-xs text-slate-700 transition">✏️</button>` : ''}
-                            <button onclick="deletePost('${post.id}')" title="삭제" class="p-1 hover:bg-black/10 rounded-lg text-xs text-rose-600 transition">🗑️</button>
-                        </div>
-                    `;
-                }
-
-                // Comment Section HTML
-                const commentsListHtml = (post.comments || []).map(cmt => {
-                    const canDeleteCmt = isAdmin || cmt.author === currentUser;
-                    return `
-                        <div class="bg-white/80 rounded-xl p-2.5 text-xs flex justify-between items-start gap-2 border border-slate-100">
-                            <div class="space-y-0.5">
-                                <span class="font-bold text-slate-800">${escapeHtml(cmt.author)}:</span>
-                                <span class="text-slate-700">${escapeHtml(cmt.text)}</span>
-                            </div>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                <span class="text-[10px] text-slate-400">${cmt.createdAt || ''}</span>
-                                ${canDeleteCmt ? `<button onclick="deleteComment('${post.id}', '${cmt.id}')" class="text-rose-500 hover:text-rose-700 ml-1 font-bold">✕</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                card.innerHTML = `
-                    <div>
-                        <!-- Section Badge & Header Info -->
-                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                            <span class="inline-block bg-white/90 text-slate-800 font-bold px-2.5 py-1 rounded-xl text-xs shadow-xs border border-slate-200/60">
-                                ${catInfo.emoji} ${catInfo.name}
-                            </span>
-                            <span class="text-xs text-slate-600 font-medium bg-white/50 px-2 py-0.5 rounded-lg">
-                                ${post.section}구간
-                            </span>
-                            ${adminControls}
-                        </div>
-
-                        <!-- Post-it Content -->
-                        <p class="text-slate-900 text-base sm:text-lg font-medium leading-relaxed mb-4 whitespace-pre-wrap">${escapeHtml(post.content)}</p>
-                    </div>
-
-                    <div>
-                        <!-- Author & Time -->
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-2 border-t border-black/5 mb-3">
-                            <span class="font-bold">👤 ${escapeHtml(post.author)}</span>
-                            <span>${post.createdAt || ''}</span>
-                        </div>
-
-                        <!-- Actions Bar (Like & Comment Count) -->
-                        <div class="flex items-center justify-between gap-2 pt-1">
-                            <button onclick="toggleLike('${post.id}')" 
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold transition ${isLiked ? 'bg-rose-500 text-white shadow-sm' : 'bg-white/80 text-slate-700 hover:bg-white'}">
-                                <span>${isLiked ? '❤️' : '🤍'}</span>
-                                <span>공감</span>
-                                <span class="ml-0.5 font-extrabold">${post.likes || 0}</span>
-                            </button>
-
-                            <div class="text-xs text-slate-600 font-bold flex items-center gap-1 bg-white/50 px-2.5 py-1 rounded-2xl">
-                                💬 댓글 ${post.comments ? post.comments.length : 0}개
-                            </div>
-                        </div>
-
-                        <!-- Comments Section Container -->
-                        <div class="mt-3 pt-3 border-t border-black/5 space-y-2">
-                            ${commentsListHtml ? `<div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">${commentsListHtml}</div>` : ''}
-
-                            <!-- Add Comment Form -->
-                            <div class="flex items-center gap-1.5 pt-1">
-                                <input type="text" id="commentInput-${post.id}" maxlength="100" placeholder="댓글을 달아보세요..."
-                                    onkeydown="if(event.key==='Enter') addComment('${post.id}')"
-                                    class="w-full px-3 py-1.5 bg-white/90 border border-slate-200/80 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-bamboo-500">
-                                <button onclick="addComment('${post.id}')" 
-                                    class="px-3 py-1.5 bg-bamboo-600 hover:bg-bamboo-700 text-white font-bold rounded-xl text-xs flex-shrink-0">
-                                    등록
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                grid.appendChild(card);
-            });
-        }
-
-        // --- UTILITY FUNCTIONS ---
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function getInitialSampleData() {
-            return [
-                {
-                    id: 'post_sample_1',
-                    author: '책벌레선생님',
-                    section: '1',
-                    category: 'red',
-                    content: '북소리가 울릴 때 주인공의 마음은 얼마나 불안했을까요? 여러분이라면 그 순간 어떤 행동을 했을지 궁금해요!',
-                    likes: 3,
-                    likedBy: ['책벌레선생님'],
-                    comments: [
-                        { id: 'c1', author: '민우', text: '저라면 도망쳤을 것 같아요!', createdAt: '오후 2:10' },
-                        { id: 'c2', author: '지민', text: '용기를 내서 앞으로 나아갔을 것 같아요.', createdAt: '오후 2:15' }
-                    ],
-                    createdAt: '오후 2:05'
-                },
-                {
-                    id: 'post_sample_2',
-                    author: '지우',
-                    section: '2',
-                    category: 'green',
-                    content: '만약 주인공이 신발장에서 그 열쇠를 발견하지 못했다면 결말이 어떻게 바뀌었을까요?',
-                    likes: 2,
-                    likedBy: [],
-                    comments: [],
-                    createdAt: '오후 2:20'
-                }
-            ];
-        }
-    </script>
-</body>
-</html>
+      // Firestore 실시간 데이터 수신 (구글 클라우드 서버 연동)
+      if (unsubscribe) unsubscribe();
+      unsubscribe = db.collection('questions').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
+        questions = [];
+        snapshot.forEach(function(doc) {
+          var data = doc.data();
+          data.docId = doc.id;
+          questions.push(data);
+        });
+        renderQuestions();
+      }, function(error) {
+        console.error("
