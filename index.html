@@ -59,19 +59,13 @@
       </div>
       <div id="room-info-bar" class="hidden flex flex-wrap items-center justify-center gap-3 bg-emerald-900/80 px-4 py-2 rounded-xl border border-emerald-600">
         <div class="text-sm sm:text-base">
-          <span class="text-emerald-300 font-bold" id="bar-book-title">도서명</span>
+          <span class="text-emerald-300 font-bold" id="bar-book-title">학급 독서 활동</span>
           <span class="mx-1 text-emerald-400">|</span>
-          <span class="text-white font-semibold" id="bar-room-title">방 제목</span>
-          <span class="ml-2 text-xs sm:text-sm bg-emerald-700 px-2 py-0.5 rounded text-emerald-200 font-bold" id="bar-user-badge">역할</span>
+          <span class="text-white font-semibold" id="bar-room-title">우리들의 독서 대나무숲</span>
+          <span class="ml-2 text-xs sm:text-sm bg-emerald-700 px-2 py-0.5 rounded text-emerald-200 font-bold" id="bar-user-badge">참가자</span>
         </div>
-        <div class="bg-amber-400 text-emerald-950 px-3 py-1 rounded-lg font-bold text-sm sm:text-base shadow">
-          초대코드: <span id="bar-invite-code" class="tracking-widest font-mono text-base sm:text-lg">------</span>
-        </div>
-        <button id="btn-delete-room" type="button" class="hidden text-xs sm:text-sm bg-red-700 hover:bg-red-800 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
-          <i class="fa-solid fa-trash mr-1"></i>방 삭제
-        </button>
-        <button id="btn-exit-room" type="button" class="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
-          <i class="fa-solid fa-right-from-bracket mr-1"></i>나가기
+        <button type="button" onclick="exitRoom()" class="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i>닉네임 변경
         </button>
       </div>
     </div>
@@ -80,77 +74,21 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
 
-    <!-- AUTH VIEW -->
-    <div id="auth-view" class="max-w-md mx-auto my-10 bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-2 border-emerald-200">
+    <!-- AUTH VIEW (닉네임 입력 후 바로 입장) -->
+    <div id="auth-view" class="max-w-md mx-auto my-12 bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl border-2 border-emerald-200">
       <div class="text-center mb-8">
-        <span class="text-6xl inline-block mb-2">🎍</span>
+        <span class="text-6xl inline-block mb-2">🎋</span>
         <h2 class="text-2xl sm:text-3xl font-jua text-emerald-900">독서 대나무숲 입장하기</h2>
         <p class="text-sm sm:text-base text-gray-500 mt-1">질문으로 깊어지는 생각의 숲</p>
       </div>
 
-      <!-- Mode Selector Tabs -->
-      <div class="flex bg-emerald-100 p-1.5 rounded-2xl mb-6">
-        <button type="button" id="tab-student" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer">
-          👨‍🎓 학생 입장
-        </button>
-        <button type="button" id="tab-teacher-create" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
-          👩‍🏫 방 개설
-        </button>
-        <button type="button" id="tab-teacher-login" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
-          🔑 관리자 재입장
-        </button>
-      </div>
-
-      <!-- Student Form -->
-      <form id="student-form" class="space-y-4">
+      <form id="student-form" class="space-y-5">
         <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">이름 또는 닉네임</label>
-          <input type="text" id="student-name" required placeholder="예: 5학년 김독서" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base">
-        </div>
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">선생님이 알려주신 6자리 초대코드</label>
-          <input type="text" id="student-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base sm:text-lg font-mono tracking-widest uppercase">
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-2">본인의 이름 또는 닉네임을 입력해 주세요</label>
+          <input type="text" id="student-name" required placeholder="예: 5학년 김독서" class="w-full px-4 py-3.5 rounded-xl border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base">
         </div>
         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
           대나무숲 들어가기 🎋
-        </button>
-      </form>
-
-      <!-- Teacher Create Form -->
-      <form id="teacher-create-form" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 제목 (학급명)</label>
-          <input type="text" id="teacher-room" required placeholder="예: 5학년 2반 독서 대나무숲" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
-        </div>
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">함께 읽는 책 제목</label>
-          <input type="text" id="teacher-book" required placeholder="예: 수남이의 편지" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
-        </div>
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">선생님 성함</label>
-          <input type="text" id="teacher-name" required placeholder="예: 박선생님" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
-        </div>
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리 숫자)</label>
-          <input type="password" id="teacher-password" required maxlength="4" placeholder="예: 1234" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
-        </div>
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
-          새 대나무숲 열기 ✨
-        </button>
-      </form>
-
-      <!-- Teacher Admin Login Form -->
-      <form id="teacher-login-form" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 초대코드 (6자리)</label>
-          <input type="text" id="login-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-base sm:text-lg font-mono tracking-widest uppercase">
-        </div>
-        <div>
-          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리)</label>
-          <input type="password" id="login-password" required maxlength="4" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
-        </div>
-        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
-          관리자 권한으로 입장 🔑
         </button>
       </form>
     </div>
@@ -246,10 +184,6 @@
       } catch (e) {}
       return memStorage[key] || null;
     }
-    function removeStorageItem(key) {
-      try { localStorage.removeItem(key); } catch (e) {}
-      delete memStorage[key];
-    }
 
     function setSessionItem(key, val) {
       try { sessionStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
@@ -266,8 +200,7 @@
       delete memStorage[key];
     }
 
-    var currentUser = { name: '', role: '', roomCode: '' };
-    var currentRoom = { roomTitle: '', bookTitle: '', code: '' };
+    var currentUser = { name: '' };
     var activeSecFilter = 'all';
     var activeCatFilter = 'all';
     var currentCategory = '인물';
@@ -288,69 +221,25 @@
       '자유': { tag: '🟡 자유 질문', class: 'postit-yellow', topBar: 'bg-yellow-400', badgeBg: 'bg-yellow-200 text-yellow-950 border-yellow-300' }
     };
 
-    function getRoomData(code) {
-      try {
-        var direct = getStorageItem('room_data_' + code);
-        if (direct) return JSON.parse(direct);
-
-        var registry = getStorageItem('bamboo_all_rooms');
-        if (registry) {
-          var rooms = JSON.parse(registry);
-          if (rooms[code]) return rooms[code];
-        }
-      } catch (e) {}
-      return null;
-    }
-
-    function saveRoomData(code, data) {
-      try {
-        setStorageItem('room_data_' + code, JSON.stringify(data));
-        var registry = {};
-        var storedRegistry = getStorageItem('bamboo_all_rooms');
-        if (storedRegistry) {
-          try { registry = JSON.parse(storedRegistry); } catch(e){}
-        }
-        registry[code] = data;
-        setStorageItem('bamboo_all_rooms', JSON.stringify(registry));
-      } catch (e) {}
-    }
-
     function initApp() {
       try {
-        var savedUser = getSessionItem('bamboo_current_user');
-        var savedRoom = getSessionItem('bamboo_current_room');
-        
-        if (savedUser && savedRoom) {
-          currentUser = JSON.parse(savedUser);
-          currentRoom = JSON.parse(savedRoom);
-          if (currentUser && currentUser.roomCode) {
-            loadRoomData();
-            return;
-          }
+        var savedUser = getSessionItem('bamboo_student_name');
+        if (savedUser) {
+          currentUser.name = savedUser;
+          loadBoardView();
+          return;
         }
       } catch (e) {}
       
-      switchTab('student');
+      document.getElementById('auth-view').classList.remove('hidden');
+      document.getElementById('board-view').classList.add('hidden');
+      document.getElementById('room-info-bar').classList.add('hidden');
     }
 
-    // DOM 안전 로드 완료 후 이벤트 바인딩
     document.addEventListener('DOMContentLoaded', function() {
-      // 탭 전환 버튼 이벤트
-      document.getElementById('tab-student').addEventListener('click', function() { switchTab('student'); });
-      document.getElementById('tab-teacher-create').addEventListener('click', function() { switchTab('teacher-create'); });
-      document.getElementById('tab-teacher-login').addEventListener('click', function() { switchTab('teacher-login'); });
-
-      // 폼 제출 이벤트
       document.getElementById('student-form').addEventListener('submit', handleStudentJoin);
-      document.getElementById('teacher-create-form').addEventListener('submit', handleTeacherCreate);
-      document.getElementById('teacher-login-form').addEventListener('submit', handleTeacherLogin);
       document.getElementById('question-form').addEventListener('submit', handleAddQuestion);
 
-      // 상단바 버튼 이벤트
-      document.getElementById('btn-delete-room').addEventListener('click', deleteEntireRoom);
-      document.getElementById('btn-exit-room').addEventListener('click', exitRoom);
-
-      // 포스트잇 색상(카테고리) 버튼 이벤트
       var catBtns = document.querySelectorAll('[data-cat-btn]');
       catBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -358,7 +247,6 @@
         });
       });
 
-      // 쪽수 필터 버튼 이벤트
       var secFilterBtns = document.querySelectorAll('[data-sec-filter]');
       secFilterBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -366,7 +254,6 @@
         });
       });
 
-      // 유형 필터 버튼 이벤트
       var catFilterBtns = document.querySelectorAll('[data-cat-filter]');
       catFilterBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -377,114 +264,24 @@
       initApp();
     });
 
-    function switchTab(tab) {
-      var studentForm = document.getElementById('student-form');
-      var teacherCreateForm = document.getElementById('teacher-create-form');
-      var teacherLoginForm = document.getElementById('teacher-login-form');
-
-      var tabStudent = document.getElementById('tab-student');
-      var tabTeacherCreate = document.getElementById('tab-teacher-create');
-      var tabTeacherLogin = document.getElementById('tab-teacher-login');
-
-      if (studentForm) studentForm.classList.toggle('hidden', tab !== 'student');
-      if (teacherCreateForm) teacherCreateForm.classList.toggle('hidden', tab !== 'teacher-create');
-      if (teacherLoginForm) teacherLoginForm.classList.toggle('hidden', tab !== 'teacher-login');
-
-      if (tabStudent) tabStudent.className = tab === 'student' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
-      if (tabTeacherCreate) tabTeacherCreate.className = tab === 'teacher-create' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
-      if (tabTeacherLogin) tabTeacherLogin.className = tab === 'teacher-login' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
-    }
-
-    function generateCode() {
-      var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      var code = '';
-      for(var i=0; i<6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-      return code;
-    }
-
     function handleStudentJoin(e) {
       e.preventDefault();
       var name = document.getElementById('student-name').value.trim();
-      var code = document.getElementById('student-code').value.trim().toUpperCase();
+      if (!name) return;
 
-      var roomInfo = getRoomData(code);
-      if (!roomInfo) {
-        alert('존재하지 않는 초대코드입니다. 선생님께 코드를 다시 확인해 주세요!');
-        return;
-      }
-
-      currentUser = { name: name, role: 'student', roomCode: code };
-      currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
-
-      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
-      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
-
-      loadRoomData();
+      currentUser.name = name;
+      setSessionItem('bamboo_student_name', name);
+      loadBoardView();
     }
 
-    function handleTeacherCreate(e) {
-      e.preventDefault();
-      var roomTitle = document.getElementById('teacher-room').value.trim();
-      var bookTitle = document.getElementById('teacher-book').value.trim();
-      var name = document.getElementById('teacher-name').value.trim();
-      var password = document.getElementById('teacher-password').value.trim();
-      var code = generateCode();
-
-      currentUser = { name: name + ' (선생님)', role: 'admin', roomCode: code };
-      currentRoom = { roomTitle: roomTitle, bookTitle: bookTitle, code: code };
-
-      saveRoomData(code, { roomTitle: roomTitle, bookTitle: bookTitle, password: password });
-      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
-      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
-
-      if (!getStorageItem('questions_' + code)) {
-        setStorageItem('questions_' + code, JSON.stringify([]));
-      }
-
-      loadRoomData();
-    }
-
-    function handleTeacherLogin(e) {
-      e.preventDefault();
-      var code = document.getElementById('login-code').value.trim().toUpperCase();
-      var password = document.getElementById('login-password').value.trim();
-
-      var roomInfo = getRoomData(code);
-      if (!roomInfo) {
-        alert('존재하지 않는 초대코드입니다.');
-        return;
-      }
-
-      if (roomInfo.password !== password) {
-        alert('관리자 비밀번호가 일치하지 않습니다.');
-        return;
-      }
-
-      currentUser = { name: '선생님 (관리자)', role: 'admin', roomCode: code };
-      currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
-
-      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
-      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
-
-      loadRoomData();
-    }
-
-    function loadRoomData() {
+    function loadBoardView() {
       document.getElementById('auth-view').classList.add('hidden');
       document.getElementById('board-view').classList.remove('hidden');
       document.getElementById('room-info-bar').classList.remove('hidden');
-
-      document.getElementById('bar-room-title').innerText = currentRoom.roomTitle;
-      document.getElementById('bar-book-title').innerText = currentRoom.bookTitle;
-      document.getElementById('bar-invite-code').innerText = currentRoom.code;
-      document.getElementById('bar-user-badge').innerText = currentUser.role === 'admin' ? '👑 관리자(선생님)' : '학생';
-
-      if (currentUser.role === 'admin') {
-        document.getElementById('btn-delete-room').classList.remove('hidden');
-      }
+      document.getElementById('bar-user-badge').innerText = currentUser.name;
 
       try {
-        var storedQ = getStorageItem('questions_' + currentRoom.code);
+        var storedQ = getStorageItem('bamboo_global_questions');
         questions = storedQ ? JSON.parse(storedQ) : [];
       } catch(e) {
         questions = [];
@@ -494,22 +291,13 @@
 
     function saveAndBroadcast() {
       try {
-        setStorageItem('questions_' + currentRoom.code, JSON.stringify(questions));
+        setStorageItem('bamboo_global_questions', JSON.stringify(questions));
       } catch (e) {}
     }
 
     function exitRoom() {
-      removeSessionItem('bamboo_current_user');
-      removeSessionItem('bamboo_current_room');
+      removeSessionItem('bamboo_student_name');
       location.reload();
-    }
-
-    function deleteEntireRoom() {
-      if (confirm('이 독서 대나무숲 방과 모든 질문을 완전히 삭제하시겠습니까?')) {
-        removeStorageItem('room_data_' + currentRoom.code);
-        removeStorageItem('questions_' + currentRoom.code);
-        exitRoom();
-      }
     }
 
     function selectCategory(cat) {
@@ -567,7 +355,6 @@
         sectionKey: sec,
         category: currentCategory,
         text: text,
-        time: '방금 전',
         likes: 0,
         likedUsers: [],
         comments: []
@@ -578,26 +365,6 @@
       renderQuestions();
       textInput.value = '';
     }
-
-    window.editQuestion = function(id) {
-      var q = questions.find(function(item) { return item.id === id; });
-      if (!q) return;
-
-      var newText = prompt('학생의 질문 내용을 수정해 주세요 (맞춤법/표현 지도):', q.text);
-      if (newText !== null && newText.trim() !== '') {
-        q.text = newText.trim();
-        saveAndBroadcast();
-        renderQuestions();
-      }
-    };
-
-    window.deleteQuestion = function(id) {
-      if (confirm('이 질문을 삭제하시겠습니까?')) {
-        questions = questions.filter(function(item) { return item.id !== id; });
-        saveAndBroadcast();
-        renderQuestions();
-      }
-    };
 
     window.toggleLike = function(id) {
       var q = questions.find(function(item) { return item.id === id; });
@@ -658,7 +425,6 @@
         var secInfo = sections[q.sectionKey] || sections['section1'];
         var catInfo = categoryStyles[q.category] || categoryStyles['자유'];
         var isLiked = q.likedUsers && q.likedUsers.includes(currentUser.name);
-        var isAdmin = currentUser.role === 'admin';
 
         var rotDeg = (idx % 3 === 0 ? -1.2 : idx % 3 === 1 ? 1.2 : -0.5);
 
@@ -667,9 +433,10 @@
         card.className = 'postit-card ' + catInfo.class + ' border-2 rounded-2xl overflow-hidden flex flex-col justify-between relative';
         
         var commentsHtml = q.comments.map(function(c) {
+          var isMyComment = (c.author === currentUser.name);
           return '<div class="text-xs sm:text-sm bg-white/90 p-2 rounded-lg border border-gray-200/80 flex justify-between items-center shadow-2xs">' +
             '<div class="keep-all"><span class="font-bold text-emerald-900">' + c.author + ':</span> <span class="text-gray-800">' + c.text + '</span></div>' +
-            (isAdmin ? '<button type="button" onclick="deleteComment(' + q.id + ', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold cursor-pointer">×</button>' : '') +
+            (isMyComment ? '<button type="button" onclick="deleteComment(' + q.id + ', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold cursor-pointer">×</button>' : '') +
           '</div>';
         }).join('');
 
@@ -684,10 +451,6 @@
               '<div class="flex flex-wrap gap-1 items-center">' +
                 '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + secInfo.color + ' border truncate">' + secInfo.name + '</span>' +
                 '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + catInfo.badgeBg + ' border truncate">' + catInfo.tag + '</span>' +
-              '</div>' +
-              '<div class="flex items-center gap-1">' +
-                (isAdmin ? '<button type="button" onclick="editQuestion(' + q.id + ')" class="text-sm text-blue-700 hover:text-blue-900 font-bold px-1 cursor-pointer" title="질문 수정">✏️</button>' +
-                           '<button type="button" onclick="deleteQuestion(' + q.id + ')" class="text-sm text-red-600 hover:text-red-800 font-bold px-1 cursor-pointer" title="질문 삭제">🗑️</button>' : '') +
               '</div>' +
             '</div>' +
             '<p class="text-gray-900 text-base sm:text-lg font-medium leading-relaxed my-3 whitespace-pre-wrap keep-all">"' + q.text + '"</p>' +
