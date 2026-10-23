@@ -275,4 +275,304 @@
 
     function handleStudentJoin(e) {
       e.preventDefault();
-      var nameInput = document.getElementById('student-name
+      var nameInput = document.getElementById('student-name');
+      if (!nameInput) return;
+      var name = nameInput.value.trim();
+      if (!name) return;
+
+      currentUser.name = name;
+      try {
+        sessionStorage.setItem('bamboo_student_name', name);
+      } catch (e) {}
+      
+      loadBoardView();
+    }
+
+    function loadBoardView() {
+      var authView = document.getElementById('auth-view');
+      var boardView = document.getElementById('board-view');
+      var roomInfoBar = document.getElementById('room-info-bar');
+      var userBadge = document.getElementById('bar-user-badge');
+
+      if (authView) authView.classList.add('hidden');
+      if (boardView) boardView.classList.remove('hidden');
+      if (roomInfoBar) roomInfoBar.classList.remove('hidden');
+      if (userBadge) userBadge.innerText = currentUser.name;
+
+      if (!db) {
+        renderQuestions();
+        return;
+      }
+
+      if (unsubscribe) unsubscribe();
+      unsubscribe = db.collection('questions').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
+        questions = [];
+        snapshot.forEach(function(doc) {
+          var data = doc.data();
+          data.docId = doc.id;
+          questions.push(data);
+        });
+        renderQuestions();
+      }, function(error) {
+        console.error("데이터 동기화 오류: ", error);
+        renderQuestions();
+      });
+    }
+
+    function exitRoom() {
+      try {
+        sessionStorage.removeItem('bamboo_student_name');
+      } catch (e) {}
+      if (unsubscribe) unsubscribe();
+      location.reload();
+    }
+
+    window.toggleLike = function(docId) {
+      var q = questions.find(function(item) { return item.docId === docId; });
+      if(q && db) {
+        if(!q.likedUsers) q.likedUsers = [];
+        var idx = q.likedUsers.indexOf(currentUser.name);
+        if(idx > -1) {
+          q.likedUsers.splice(idx, 1);
+          q.likes--;
+        } else {
+          q.likedUsers.push(currentUser.name);
+          q.likes++;
+        }
+        db.collection('questions').doc(docId).update({
+          likes: q.likes,
+          likedUsers: q.likedUsers
+        });
+      }
+    };
+
+    window.toggleAdminMode = function() {
+      if (!isAdminMode) {
+        var pw = prompt('선생님 관리자 비밀번호를 입력하세요:');
+        if (pw === adminPassword) {
+          isAdminMode = true;
+          document.getElementById('admin-icon').className = 'fa-solid fa-unlock mr-1';
+          document.getElementById('admin-btn-text').innerText = '관리자 해제';
+          document.getElementById('btn-admin-toggle').className = 'text-xs sm:text-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer shadow';
+          alert('관리자 모드가 활성화되었습니다. 모든 질문과 댓글을 수정/삭제할 수 있습니다.');
+          renderQuestions();
+        } else if (pw !== null) {
+          alert('비밀번호가 일치하지 않습니다.');
+        }
+      } else {
+        isAdminMode = false;
+        document.getElementById('admin-icon').className = 'fa-solid fa-lock mr-1';
+        document.getElementById('admin-btn-text').innerText = '관리자 모드';
+        document.getElementById('btn-admin-toggle').className = 'text-xs sm:text-sm bg-amber-500 hover:bg-amber-600 px-3 py-1 rounded text-emerald-950 transition font-bold cursor-pointer shadow';
+        alert('관리자 모드가 해제되었습니다.');
+        renderQuestions();
+      }
+    };
+
+    window.editQuestion = function(docId) {
+      if (!isAdminMode || !db) return;
+      var q = questions.find(function(item) { return item.docId === docId; });
+      if (!q) return;
+
+      var newText = prompt('질문 내용을 수정해 주세요 (맞춤법/표현 지도):', q.text);
+      if (newText !== null && newText.trim() !== '') {
+        db.collection('questions').doc(docId).update({
+          text: newText.trim()
+        });
+      }
+    };
+
+    window.deleteQuestion = function(docId) {
+      if (!isAdminMode || !db) return;
+      if (confirm('이 포스트잇 질문을 삭제하시겠습니까?')) {
+        db.collection('questions').doc(docId).delete();
+      }
+    };
+
+    window.addComment = function(docId, event) {
+      event.preventDefault();
+      var input = document.getElementById('comment-input-' + docId);
+      if (!input) return;
+      var text = input.value.trim();
+      if(!text || !db) return;
+
+      var q = questions.find(function(item) { return item.docId === docId; });
+      if(q) {
+        if(!q.comments) q.comments = [];
+        q.comments.push({ id: Date.now() + Math.random(), author: currentUser.name, text: text });
+        db.collection('questions').doc(docId).update({
+          comments: q.comments
+        });
+      }
+    };
+
+    window.deleteComment = function(docId, cId) {
+      var q = questions.find(function(item) { return item.docId === docId; });
+      if(q && db) {
+        var targetC = q.comments.find(function(c) { return c.id === cId; });
+        if (!targetC) return;
+
+        if (targetC.author === currentUser.name || isAdminMode) {
+          if (confirm('이 댓글을 삭제하시겠습니까?')) {
+            q.comments = q.comments.filter(function(c) { return c.id !== cId; });
+            db.collection('questions').doc(docId).update({
+              comments: q.comments
+            });
+          }
+        } else {
+          alert('본인이 작성한 댓글만 삭제할 수 있습니다.');
+        }
+      }
+    };
+
+    function selectCategory(cat) {
+      currentCategory = cat;
+      var btns = document.querySelectorAll('[data-cat-btn]');
+      btns.forEach(function(btn) {
+        var bCat = btn.getAttribute('data-cat-btn');
+        if(bCat === cat) {
+          var catClass = cat === '인물' ? 'bg-red-100 text-red-900 border-red-400' : cat === '만약에' ? 'bg-green-100 text-green-900 border-green-400' : cat === '현실' ? 'bg-blue-100 text-blue-900 border-blue-400' : 'bg-yellow-100 text-yellow-900 border-yellow-400';
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold ' + catClass + ' border-2 shadow-xs cursor-pointer';
+        } else {
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100 cursor-pointer';
+        }
+      });
+    }
+
+    function filterBySection(sec) {
+      activeSecFilter = sec;
+      var btns = document.querySelectorAll('[data-sec-filter]');
+      btns.forEach(function(btn) {
+        var btnSec = btn.getAttribute('data-sec-filter');
+        if (btnSec === sec) {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
+        } else {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
+        }
+      });
+      renderQuestions();
+    }
+
+    function filterByCategory(cat) {
+      activeCatFilter = cat;
+      var btns = document.querySelectorAll('[data-cat-filter]');
+      btns.forEach(function(btn) {
+        var btnCat = btn.getAttribute('data-cat-filter');
+        if (btnCat === cat) {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
+        } else {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
+        }
+      });
+      renderQuestions();
+    }
+
+    function handleAddQuestion(e) {
+      e.preventDefault();
+      var secSelect = document.getElementById('section-select');
+      var textInput = document.getElementById('question-text');
+      if (!secSelect || !textInput) return;
+
+      var sec = secSelect.value;
+      var text = textInput.value.trim();
+      if (!text || !db) return;
+
+      var q = {
+        author: currentUser.name,
+        sectionKey: sec,
+        category: currentCategory,
+        text: text,
+        likes: 0,
+        likedUsers: [],
+        comments: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      db.collection('questions').add(q).then(function() {
+        textInput.value = '';
+      }).catch(function(error) {
+        console.error("질문 등록 실패: ", error);
+        alert("질문 등록에 실패했습니다. 네트워크를 확인해 주세요.");
+      });
+    }
+
+    function renderQuestions() {
+      var grid = document.getElementById('questions-grid');
+      var countSpan = document.getElementById('question-count');
+      if (!grid) return;
+      
+      var filtered = questions.filter(function(q) {
+        var secMatch = (activeSecFilter === 'all' || q.sectionKey === activeSecFilter);
+        var catMatch = (activeCatFilter === 'all' || q.category === activeCatFilter);
+        return secMatch && catMatch;
+      });
+      
+      if (countSpan) countSpan.innerText = filtered.length;
+      grid.innerHTML = '';
+
+      filtered.forEach(function(q, idx) {
+        var secInfo = sections[q.sectionKey] || sections['section1'];
+        var catInfo = categoryStyles[q.category] || categoryStyles['자유'];
+        var isLiked = q.likedUsers && q.likedUsers.includes(currentUser.name);
+
+        var rotDeg = (idx % 3 === 0 ? -1.2 : idx % 3 === 1 ? 1.2 : -0.5);
+
+        var card = document.createElement('div');
+        card.style.transform = 'rotate(' + rotDeg + 'deg)';
+        card.className = 'postit-card ' + catInfo.class + ' border-2 rounded-2xl overflow-hidden flex flex-col justify-between relative';
+        
+        var commentsHtml = (q.comments || []).map(function(c) {
+          var canDeleteComment = (c.author === currentUser.name || isAdminMode);
+          return '<div class="text-xs sm:text-sm bg-white/90 p-2 rounded-lg border border-gray-200/80 flex justify-between items-center shadow-2xs">' +
+            '<div class="keep-all"><span class="font-bold text-emerald-900">' + c.author + ':</span> <span class="text-gray-800">' + c.text + '</span></div>' +
+            (canDeleteComment ? '<button type="button" onclick="deleteComment(\'' + q.docId + '\', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold cursor-pointer">×</button>' : '') +
+          '</div>';
+        }).join('');
+
+        if (!q.comments || q.comments.length === 0) {
+          commentsHtml = '<p class="text-xs sm:text-sm text-gray-400 text-center py-1">첫 댓글을 남겨보세요!</p>';
+        }
+
+        var adminActionBtns = '';
+        if (isAdminMode) {
+          adminActionBtns = '<div class="flex items-center gap-1">' +
+            '<button type="button" onclick="editQuestion(\'' + q.docId + '\')" class="text-sm text-blue-700 hover:text-blue-900 font-bold px-1 cursor-pointer" title="질문 수정">✏️</button>' +
+            '<button type="button" onclick="deleteQuestion(\'' + q.docId + '\')" class="text-sm text-red-600 hover:text-red-800 font-bold px-1 cursor-pointer" title="질문 삭제">🗑️</button>' +
+          '</div>';
+        }
+
+        card.innerHTML = 
+          '<div class="' + catInfo.topBar + ' h-2.5 w-full opacity-80"></div>' +
+          '<div class="p-5 pt-3">' +
+            '<div class="flex flex-wrap justify-between items-center gap-1 mb-2">' +
+              '<div class="flex flex-wrap gap-1 items-center">' +
+                '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + secInfo.color + ' border truncate">' + secInfo.name + '</span>' +
+                '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + catInfo.badgeBg + ' border truncate">' + catInfo.tag + '</span>' +
+              '</div>' +
+              adminActionBtns +
+            '</div>' +
+            '<p class="text-gray-900 text-base sm:text-lg font-medium leading-relaxed my-3 whitespace-pre-wrap keep-all">"' + q.text + '"</p>' +
+          '</div>' +
+          '<div class="p-5 pt-0">' +
+            '<div class="flex justify-between items-center text-xs sm:text-sm text-gray-600 pt-2 border-t border-black/10 mb-3">' +
+              '<span class="font-bold text-gray-900">✍️ ' + q.author + '</span>' +
+              '<button type="button" onclick="toggleLike(\'' + q.docId + '\')" class="flex items-center gap-1 font-bold ' + (isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-500') + ' transition cursor-pointer">' +
+                '<i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart"></i>' +
+                '<span>공감 ' + q.likes + '</span>' +
+              '</button>' +
+            '</div>' +
+            '<div class="space-y-2 bg-white/70 rounded-xl p-2.5 border border-black/5">' +
+              '<div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">' + commentsHtml + '</div>' +
+              '<form onsubmit="addComment(\'' + q.docId + '\', event)" class="flex gap-1 mt-2">' +
+                '<input type="text" id="comment-input-' + q.docId + '" placeholder="댓글 작성..." class="flex-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">' +
+                '<button type="submit" class="bg-emerald-700 text-white text-xs sm:text-sm px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 whitespace-nowrap shadow-xs cursor-pointer">등록</button>' +
+              '</form>' +
+            '</div>' +
+          '</div>';
+
+        grid.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
