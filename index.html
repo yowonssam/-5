@@ -67,10 +67,10 @@
         <div class="bg-amber-400 text-emerald-950 px-3 py-1 rounded-lg font-bold text-sm sm:text-base shadow">
           초대코드: <span id="bar-invite-code" class="tracking-widest font-mono text-base sm:text-lg">------</span>
         </div>
-        <button id="btn-delete-room" onclick="deleteEntireRoom()" class="hidden text-xs sm:text-sm bg-red-700 hover:bg-red-800 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
+        <button id="btn-delete-room" type="button" class="hidden text-xs sm:text-sm bg-red-700 hover:bg-red-800 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
           <i class="fa-solid fa-trash mr-1"></i>방 삭제
         </button>
-        <button onclick="exitRoom()" class="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
+        <button id="btn-exit-room" type="button" class="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white transition font-bold cursor-pointer">
           <i class="fa-solid fa-right-from-bracket mr-1"></i>나가기
         </button>
       </div>
@@ -90,19 +90,19 @@
 
       <!-- Mode Selector Tabs -->
       <div class="flex bg-emerald-100 p-1.5 rounded-2xl mb-6">
-        <button type="button" id="tab-student" onclick="switchTab('student')" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer">
+        <button type="button" id="tab-student" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer">
           👨‍🎓 학생 입장
         </button>
-        <button type="button" id="tab-teacher-create" onclick="switchTab('teacher-create')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
+        <button type="button" id="tab-teacher-create" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
           👩‍🏫 방 개설
         </button>
-        <button type="button" id="tab-teacher-login" onclick="switchTab('teacher-login')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
+        <button type="button" id="tab-teacher-login" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
           🔑 관리자 재입장
         </button>
       </div>
 
       <!-- Student Form -->
-      <form id="student-form" onsubmit="handleStudentJoin(event)" class="space-y-4">
+      <form id="student-form" class="space-y-4">
         <div>
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">이름 또는 닉네임</label>
           <input type="text" id="student-name" required placeholder="예: 5학년 김독서" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base">
@@ -117,7 +117,7 @@
       </form>
 
       <!-- Teacher Create Form -->
-      <form id="teacher-create-form" onsubmit="handleTeacherCreate(event)" class="space-y-4 hidden">
+      <form id="teacher-create-form" class="space-y-4 hidden">
         <div>
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 제목 (학급명)</label>
           <input type="text" id="teacher-room" required placeholder="예: 5학년 2반 독서 대나무숲" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
@@ -140,7 +140,7 @@
       </form>
 
       <!-- Teacher Admin Login Form -->
-      <form id="teacher-login-form" onsubmit="handleTeacherLogin(event)" class="space-y-4 hidden">
+      <form id="teacher-login-form" class="space-y-4 hidden">
         <div>
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 초대코드 (6자리)</label>
           <input type="text" id="login-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-base sm:text-lg font-mono tracking-widest uppercase">
@@ -163,7 +163,7 @@
         <h3 class="text-base sm:text-lg font-jua text-emerald-900 mb-3 flex items-center gap-2">
           <span>✍️</span> 읽은 단원(쪽수)과 질문 유형을 선택하고 독서 질문을 포스트잇으로 붙여보세요!
         </h3>
-        <form onsubmit="handleAddQuestion(event)" class="space-y-4">
+        <form id="question-form" class="space-y-4">
           
           <!-- Section Selector Dropdown -->
           <div>
@@ -181,10 +181,10 @@
           <div>
             <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1.5">🏷️ 질문 유형 (포스트잇 색상 선택):</label>
             <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="selectCategory('인물')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-red-100 text-red-900 border-2 border-red-400 shadow-xs cursor-pointer">🔴 인물의 마음 질문 (분홍)</button>
-              <button type="button" onclick="selectCategory('만약에')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-green-50 cursor-pointer">🟢 만약에? 질문 (연두)</button>
-              <button type="button" onclick="selectCategory('현실')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-blue-50 cursor-pointer">🔵 현실 세계 연결 (하늘)</button>
-              <button type="button" onclick="selectCategory('자유')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-yellow-50 cursor-pointer">🟡 자유 질문 (노랑)</button>
+              <button type="button" data-cat-btn="인물" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-red-100 text-red-900 border-2 border-red-400 shadow-xs cursor-pointer">🔴 인물의 마음 질문 (분홍)</button>
+              <button type="button" data-cat-btn="만약에" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-green-50 cursor-pointer">🟢 만약에? 질문 (연두)</button>
+              <button type="button" data-cat-btn="현실" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-blue-50 cursor-pointer">🔵 현실 세계 연결 (하늘)</button>
+              <button type="button" data-cat-btn="자유" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-yellow-50 cursor-pointer">🟡 자유 질문 (노랑)</button>
             </div>
           </div>
 
@@ -202,7 +202,18 @@
         <!-- 1) 쪽수 필터 -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1">
           <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">📖 쪽수 필터:</span>
-          <button onclick="filterBySection('all')" data-sec="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체보기</button>
-          <button onclick="filterBySection('section1')" data-sec="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap cursor-pointer">1) 7~42쪽</button>
-          <button onclick="filterBySection('section2')" data-sec="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap cursor-pointer">2) 43~84쪽</button>
-          <button onclick="filterBySection('section3')" data-sec="section3
+          <button type="button" data-sec-filter="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체보기</button>
+          <button type="button" data-sec-filter="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap cursor-pointer">1) 7~42쪽</button>
+          <button type="button" data-sec-filter="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap cursor-pointer">2) 43~84쪽</button>
+          <button type="button" data-sec-filter="section3" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">3) 85~107쪽</button>
+          <button type="button" data-sec-filter="section4" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap cursor-pointer">4) 108~147쪽</button>
+          <button type="button" data-sec-filter="section5" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap cursor-pointer">5) 148~170쪽</button>
+        </div>
+
+        <!-- 2) 질문 유형 필터 -->
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-emerald-100">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1">
+            <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">🏷️ 유형 필터:</span>
+            <button type="button" data-cat-filter="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체유형</button>
+            <button type="button" data-cat-filter="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap cursor-pointer">🔴 인물의 마음</button>
+            <button type="button" data-cat-filter="만약
