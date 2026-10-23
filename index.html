@@ -19,7 +19,7 @@
     body {
       font-family: 'Gowun Dodum', sans-serif;
       background-color: #f2f7f4;
-      word-break: keep-all; /* 외톨이 글자 방지 */
+      word-break: keep-all;
     }
     .font-jua {
       font-family: 'Jua', sans-serif;
@@ -33,8 +33,6 @@
     .keep-all {
       word-break: keep-all;
     }
-
-    /* 파스텔 포스트잇 메모지 스타일 */
     .postit-card {
       box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
       border-bottom-right-radius: 18px 4px;
@@ -179,7 +177,7 @@
   </main>
 
   <script>
-    // 선생님의 실제 파이어베이스 설정값 적용
+    // 선생님의 파이어베이스 설정값
     var firebaseConfig = {
       apiKey: "AIzaSyDJvNknk2h_gzRiyXU4NtFMP3x9Gy3Ph-4",
       authDomain: "yowonssam.firebaseapp.com",
@@ -190,13 +188,20 @@
       measurementId: "G-W50B41EYLR"
     };
 
-    // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    // Firebase 안전 초기화
+    var db = null;
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore();
+    } catch (err) {
+      console.error("Firebase 초기화 오류:", err);
+    }
 
     var currentUser = { name: '' };
     var isAdminMode = false;
-    var adminPassword = '2026'; // 관리자 비밀번호
+    var adminPassword = '2026';
     var activeSecFilter = 'all';
     var activeCatFilter = 'all';
     var currentCategory = '인물';
@@ -234,8 +239,15 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('student-form').addEventListener('submit', handleStudentJoin);
-      document.getElementById('question-form').addEventListener('submit', handleAddQuestion);
+      var studentForm = document.getElementById('student-form');
+      if (studentForm) {
+        studentForm.addEventListener('submit', handleStudentJoin);
+      }
+      
+      var questionForm = document.getElementById('question-form');
+      if (questionForm) {
+        questionForm.addEventListener('submit', handleAddQuestion);
+      }
 
       var catBtns = document.querySelectorAll('[data-cat-btn]');
       catBtns.forEach(function(btn) {
@@ -263,31 +275,4 @@
 
     function handleStudentJoin(e) {
       e.preventDefault();
-      var name = document.getElementById('student-name').value.trim();
-      if (!name) return;
-
-      currentUser.name = name;
-      try {
-        sessionStorage.setItem('bamboo_student_name', name);
-      } catch (e) {}
-      loadBoardView();
-    }
-
-    function loadBoardView() {
-      document.getElementById('auth-view').classList.add('hidden');
-      document.getElementById('board-view').classList.remove('hidden');
-      document.getElementById('room-info-bar').classList.remove('hidden');
-      document.getElementById('bar-user-badge').innerText = currentUser.name;
-
-      // Firestore 실시간 데이터 수신 (구글 클라우드 서버 연동)
-      if (unsubscribe) unsubscribe();
-      unsubscribe = db.collection('questions').orderBy('createdAt', 'desc').onSnapshot(function(snapshot) {
-        questions = [];
-        snapshot.forEach(function(doc) {
-          var data = doc.data();
-          data.docId = doc.id;
-          questions.push(data);
-        });
-        renderQuestions();
-      }, function(error) {
-        console.error("
+      var nameInput = document.getElementById('student-name
