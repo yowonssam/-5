@@ -90,13 +90,13 @@
 
       <!-- Mode Selector Tabs -->
       <div class="flex bg-emerald-100 p-1.5 rounded-2xl mb-6">
-        <button id="tab-student" onclick="switchTab('student')" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm">
+        <button type="button" id="tab-student" onclick="switchTab('student')" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer">
           👨‍🎓 학생 입장
         </button>
-        <button id="tab-teacher-create" onclick="switchTab('teacher-create')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900">
+        <button type="button" id="tab-teacher-create" onclick="switchTab('teacher-create')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
           👩‍🏫 방 개설
         </button>
-        <button id="tab-teacher-login" onclick="switchTab('teacher-login')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900">
+        <button type="button" id="tab-teacher-login" onclick="switchTab('teacher-login')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer">
           🔑 관리자 재입장
         </button>
       </div>
@@ -111,7 +111,7 @@
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">선생님이 알려주신 6자리 초대코드</label>
           <input type="text" id="student-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base sm:text-lg font-mono tracking-widest uppercase">
         </div>
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
           대나무숲 들어가기 🎋
         </button>
       </form>
@@ -134,7 +134,7 @@
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리 숫자)</label>
           <input type="password" id="teacher-password" required maxlength="4" placeholder="예: 1234" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
         </div>
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
           새 대나무숲 열기 ✨
         </button>
       </form>
@@ -149,7 +149,7 @@
           <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리)</label>
           <input type="password" id="login-password" required maxlength="4" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
         </div>
-        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition cursor-pointer">
           관리자 권한으로 입장 🔑
         </button>
       </form>
@@ -181,16 +181,16 @@
           <div>
             <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1.5">🏷️ 질문 유형 (포스트잇 색상 선택):</label>
             <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="selectCategory('인물')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-red-100 text-red-900 border-2 border-red-400 shadow-xs">🔴 인물의 마음 질문 (분홍)</button>
-              <button type="button" onclick="selectCategory('만약에')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-green-50">🟢 만약에? 질문 (연두)</button>
-              <button type="button" onclick="selectCategory('현실')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-blue-50">🔵 현실 세계 연결 (하늘)</button>
-              <button type="button" onclick="selectCategory('자유')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-yellow-50">🟡 자유 질문 (노랑)</button>
+              <button type="button" onclick="selectCategory('인물')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-red-100 text-red-900 border-2 border-red-400 shadow-xs cursor-pointer">🔴 인물의 마음 질문 (분홍)</button>
+              <button type="button" onclick="selectCategory('만약에')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-green-50 cursor-pointer">🟢 만약에? 질문 (연두)</button>
+              <button type="button" onclick="selectCategory('현실')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-blue-50 cursor-pointer">🔵 현실 세계 연결 (하늘)</button>
+              <button type="button" onclick="selectCategory('자유')" class="cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-yellow-50 cursor-pointer">🟡 자유 질문 (노랑)</button>
             </div>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2 pt-1">
             <textarea id="question-text" required rows="2" placeholder="책을 읽으며 궁금했던 점이나 친구들과 함께 나누고 싶은 질문을 적어보세요." class="flex-1 p-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base resize-none"></textarea>
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-jua px-6 py-3 sm:py-0 rounded-xl shadow-md transition flex items-center justify-center text-base sm:text-lg whitespace-nowrap">
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-jua px-6 py-3 sm:py-0 rounded-xl shadow-md transition flex items-center justify-center text-base sm:text-lg whitespace-nowrap cursor-pointer">
               포스트잇 붙이기 📌
             </button>
           </div>
@@ -202,23 +202,23 @@
         <!-- 1) 쪽수 필터 -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1">
           <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">📖 쪽수 필터:</span>
-          <button onclick="filterBySection('all')" data-sec="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체보기</button>
-          <button onclick="filterBySection('section1')" data-sec="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap">1) 7~42쪽</button>
-          <button onclick="filterBySection('section2')" data-sec="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap">2) 43~84쪽</button>
-          <button onclick="filterBySection('section3')" data-sec="section3" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">3) 85~107쪽</button>
-          <button onclick="filterBySection('section4')" data-sec="section4" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap">4) 108~147쪽</button>
-          <button onclick="filterBySection('section5')" data-sec="section5" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap">5) 148~170쪽</button>
+          <button onclick="filterBySection('all')" data-sec="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체보기</button>
+          <button onclick="filterBySection('section1')" data-sec="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap cursor-pointer">1) 7~42쪽</button>
+          <button onclick="filterBySection('section2')" data-sec="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap cursor-pointer">2) 43~84쪽</button>
+          <button onclick="filterBySection('section3')" data-sec="section3" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">3) 85~107쪽</button>
+          <button onclick="filterBySection('section4')" data-sec="section4" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap cursor-pointer">4) 108~147쪽</button>
+          <button onclick="filterBySection('section5')" data-sec="section5" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap cursor-pointer">5) 148~170쪽</button>
         </div>
 
         <!-- 2) 질문 유형 필터 -->
         <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-emerald-100">
           <div class="flex items-center gap-2 overflow-x-auto pb-1">
             <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">🏷️ 유형 필터:</span>
-            <button onclick="filterByCategory('all')" data-cat="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체유형</button>
-            <button onclick="filterByCategory('인물')" data-cat="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap">🔴 인물의 마음</button>
-            <button onclick="filterByCategory('만약에')" data-cat="만약에" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap">🟢 만약에?</button>
-            <button onclick="filterByCategory('현실')" data-cat="현실" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">🔵 현실 세계 연결</button>
-            <button onclick="filterByCategory('자유')" data-cat="자유" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap">🟡 자유 질문</button>
+            <button onclick="filterByCategory('all')" data-cat="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer">전체유형</button>
+            <button onclick="filterByCategory('인물')" data-cat="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap cursor-pointer">🔴 인물의 마음</button>
+            <button onclick="filterByCategory('만약에')" data-cat="만약에" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap cursor-pointer">🟢 만약에?</button>
+            <button onclick="filterByCategory('현실')" data-cat="현실" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap cursor-pointer">🔵 현실 세계 연결</button>
+            <button onclick="filterByCategory('자유')" data-cat="자유" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap cursor-pointer">🟡 자유 질문</button>
           </div>
           <div class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap ml-auto">
             모인 질문 <span id="question-count" class="text-emerald-600 font-mono text-base">0</span>개
@@ -235,14 +235,9 @@
   </main>
 
   <script>
-    // 안심 메모리 스토리지 (localStorage 차단 예외 처리)
     var memStorage = {};
     function setStorageItem(key, val) {
-      try {
-        localStorage.setItem(key, val);
-      } catch (e) {
-        memStorage[key] = val;
-      }
+      try { localStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
     }
     function getStorageItem(key) {
       try {
@@ -252,9 +247,22 @@
       return memStorage[key] || null;
     }
     function removeStorageItem(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+      delete memStorage[key];
+    }
+
+    function setSessionItem(key, val) {
+      try { sessionStorage.setItem(key, val); } catch (e) { memStorage[key] = val; }
+    }
+    function getSessionItem(key) {
       try {
-        localStorage.removeItem(key);
+        var v = sessionStorage.getItem(key);
+        if (v !== null) return v;
       } catch (e) {}
+      return memStorage[key] || null;
+    }
+    function removeSessionItem(key) {
+      try { sessionStorage.removeItem(key); } catch (e) {}
       delete memStorage[key];
     }
 
@@ -309,8 +317,8 @@
 
     function initApp() {
       try {
-        var savedUser = getStorageItem('bamboo_current_user');
-        var savedRoom = getStorageItem('bamboo_current_room');
+        var savedUser = getSessionItem('bamboo_current_user');
+        var savedRoom = getSessionItem('bamboo_current_room');
         
         if (savedUser && savedRoom) {
           currentUser = JSON.parse(savedUser);
@@ -330,18 +338,21 @@
     };
 
     function switchTab(tab) {
-      var authView = document.getElementById('auth-view');
-      var boardView = document.getElementById('board-view');
-      if (authView) authView.classList.remove('hidden');
-      if (boardView) boardView.classList.add('hidden');
+      var studentForm = document.getElementById('student-form');
+      var teacherCreateForm = document.getElementById('teacher-create-form');
+      var teacherLoginForm = document.getElementById('teacher-login-form');
 
-      document.getElementById('tab-student').className = tab === 'student' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700';
-      document.getElementById('tab-teacher-create').className = tab === 'teacher-create' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700';
-      document.getElementById('tab-teacher-login').className = tab === 'teacher-login' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700';
+      var tabStudent = document.getElementById('tab-student');
+      var tabTeacherCreate = document.getElementById('tab-teacher-create');
+      var tabTeacherLogin = document.getElementById('tab-teacher-login');
 
-      document.getElementById('student-form').classList.toggle('hidden', tab !== 'student');
-      document.getElementById('teacher-create-form').classList.toggle('hidden', tab !== 'teacher-create');
-      document.getElementById('teacher-login-form').classList.toggle('hidden', tab !== 'teacher-login');
+      if (studentForm) studentForm.classList.toggle('hidden', tab !== 'student');
+      if (teacherCreateForm) teacherCreateForm.classList.toggle('hidden', tab !== 'teacher-create');
+      if (teacherLoginForm) teacherLoginForm.classList.toggle('hidden', tab !== 'teacher-login');
+
+      if (tabStudent) tabStudent.className = tab === 'student' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
+      if (tabTeacherCreate) tabTeacherCreate.className = tab === 'teacher-create' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
+      if (tabTeacherLogin) tabTeacherLogin.className = tab === 'teacher-login' ? 'flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm cursor-pointer' : 'flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900 cursor-pointer';
     }
 
     function generateCode() {
@@ -365,8 +376,8 @@
       currentUser = { name: name, role: 'student', roomCode: code };
       currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
 
-      setStorageItem('bamboo_current_user', JSON.stringify(currentUser));
-      setStorageItem('bamboo_current_room', JSON.stringify(currentRoom));
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
 
       loadRoomData();
     }
@@ -383,8 +394,8 @@
       currentRoom = { roomTitle: roomTitle, bookTitle: bookTitle, code: code };
 
       saveRoomData(code, { roomTitle: roomTitle, bookTitle: bookTitle, password: password });
-      setStorageItem('bamboo_current_user', JSON.stringify(currentUser));
-      setStorageItem('bamboo_current_room', JSON.stringify(currentRoom));
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
 
       if (!getStorageItem('questions_' + code)) {
         setStorageItem('questions_' + code, JSON.stringify([]));
@@ -412,8 +423,8 @@
       currentUser = { name: '선생님 (관리자)', role: 'admin', roomCode: code };
       currentRoom = { roomTitle: roomInfo.roomTitle, bookTitle: roomInfo.bookTitle, code: code };
 
-      setStorageItem('bamboo_current_user', JSON.stringify(currentUser));
-      setStorageItem('bamboo_current_room', JSON.stringify(currentRoom));
+      setSessionItem('bamboo_current_user', JSON.stringify(currentUser));
+      setSessionItem('bamboo_current_room', JSON.stringify(currentRoom));
 
       loadRoomData();
     }
@@ -448,8 +459,8 @@
     }
 
     function exitRoom() {
-      removeStorageItem('bamboo_current_user');
-      removeStorageItem('bamboo_current_room');
+      removeSessionItem('bamboo_current_user');
+      removeSessionItem('bamboo_current_room');
       location.reload();
     }
 
@@ -467,38 +478,36 @@
       btns.forEach(function(btn) {
         if(btn.innerText.includes(cat === '인물' ? '인물' : cat === '만약에' ? '만약에' : cat === '현실' ? '현실' : '자유')) {
           var catClass = cat === '인물' ? 'bg-red-100 text-red-900 border-red-400' : cat === '만약에' ? 'bg-green-100 text-green-900 border-green-400' : cat === '현실' ? 'bg-blue-100 text-blue-900 border-blue-400' : 'bg-yellow-100 text-yellow-900 border-yellow-400';
-          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold ' + catClass + ' border-2 shadow-xs';
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold ' + catClass + ' border-2 shadow-xs cursor-pointer';
         } else {
-          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100';
+          btn.className = 'cat-btn px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100 cursor-pointer';
         }
       });
     }
 
-    // 정확한 매칭을 적용한 쪽수 필터 함수
     function filterBySection(sec) {
       activeSecFilter = sec;
       var btns = document.querySelectorAll('.sec-filter-btn');
       btns.forEach(function(btn) {
         var btnSec = btn.getAttribute('data-sec');
         if (btnSec === sec) {
-          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap';
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
         } else {
-          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
         }
       });
       renderQuestions();
     }
 
-    // 정확한 매칭을 적용한 유형 필터 함수
     function filterByCategory(cat) {
       activeCatFilter = cat;
       var btns = document.querySelectorAll('.cat-filter-btn');
       btns.forEach(function(btn) {
         var btnCat = btn.getAttribute('data-cat');
         if (btnCat === cat) {
-          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap';
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap cursor-pointer';
         } else {
-          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap cursor-pointer';
         }
       });
       renderQuestions();
@@ -619,7 +628,7 @@
         var commentsHtml = q.comments.map(function(c) {
           return '<div class="text-xs sm:text-sm bg-white/90 p-2 rounded-lg border border-gray-200/80 flex justify-between items-center shadow-2xs">' +
             '<div class="keep-all"><span class="font-bold text-emerald-900">' + c.author + ':</span> <span class="text-gray-800">' + c.text + '</span></div>' +
-            (isAdmin ? '<button onclick="deleteComment(' + q.id + ', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold">×</button>' : '') +
+            (isAdmin ? '<button onclick="deleteComment(' + q.id + ', ' + c.id + ')" class="text-red-500 hover:text-red-700 text-xs ml-1 font-bold cursor-pointer">×</button>' : '') +
           '</div>';
         }).join('');
 
@@ -636,8 +645,8 @@
                 '<span class="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full ' + catInfo.badgeBg + ' border truncate">' + catInfo.tag + '</span>' +
               '</div>' +
               '<div class="flex items-center gap-1">' +
-                (isAdmin ? '<button onclick="editQuestion(' + q.id + ')" class="text-sm text-blue-700 hover:text-blue-900 font-bold px-1" title="질문 수정">✏️</button>' +
-                           '<button onclick="deleteQuestion(' + q.id + ')" class="text-sm text-red-600 hover:text-red-800 font-bold px-1" title="질문 삭제">🗑️</button>' : '') +
+                (isAdmin ? '<button onclick="editQuestion(' + q.id + ')" class="text-sm text-blue-700 hover:text-blue-900 font-bold px-1 cursor-pointer" title="질문 수정">✏️</button>' +
+                           '<button onclick="deleteQuestion(' + q.id + ')" class="text-sm text-red-600 hover:text-red-800 font-bold px-1 cursor-pointer" title="질문 삭제">🗑️</button>' : '') +
               '</div>' +
             '</div>' +
             '<p class="text-gray-900 text-base sm:text-lg font-medium leading-relaxed my-3 whitespace-pre-wrap keep-all">"' + q.text + '"</p>' +
@@ -645,7 +654,7 @@
           '<div class="p-5 pt-0">' +
             '<div class="flex justify-between items-center text-xs sm:text-sm text-gray-600 pt-2 border-t border-black/10 mb-3">' +
               '<span class="font-bold text-gray-900">✍️ ' + q.author + '</span>' +
-              '<button onclick="toggleLike(' + q.id + ')" class="flex items-center gap-1 font-bold ' + (isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-500') + ' transition">' +
+              '<button onclick="toggleLike(' + q.id + ')" class="flex items-center gap-1 font-bold ' + (isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-500') + ' transition cursor-pointer">' +
                 '<i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart"></i>' +
                 '<span>공감 ' + q.likes + '</span>' +
               '</button>' +
@@ -654,7 +663,7 @@
               '<div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">' + commentsHtml + '</div>' +
               '<form onsubmit="addComment(' + q.id + ', event)" class="flex gap-1 mt-2">' +
                 '<input type="text" id="comment-input-' + q.id + '" placeholder="댓글 작성..." class="flex-1 px-2.5 py-1.5 text-xs sm:text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">' +
-                '<button type="submit" class="bg-emerald-700 text-white text-xs sm:text-sm px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 whitespace-nowrap shadow-xs">등록</button>' +
+                '<button type="submit" class="bg-emerald-700 text-white text-xs sm:text-sm px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 whitespace-nowrap shadow-xs cursor-pointer">등록</button>' +
               '</form>' +
             '</div>' +
           '</div>';
