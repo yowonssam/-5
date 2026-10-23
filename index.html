@@ -90,4 +90,77 @@
 
       <!-- Mode Selector Tabs -->
       <div class="flex bg-emerald-100 p-1.5 rounded-2xl mb-6">
-        <button id="tab-student" onclick="switchTab('student')" class="flex-1 py-2.5 rounded-xl font-bold text-
+        <button id="tab-student" onclick="switchTab('student')" class="flex-1 py-2.5 rounded-xl font-bold text-sm sm:text-base transition bg-white text-emerald-800 shadow-sm">
+          👨‍🎓 학생 입장
+        </button>
+        <button id="tab-teacher-create" onclick="switchTab('teacher-create')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900">
+          👩‍🏫 방 개설
+        </button>
+        <button id="tab-teacher-login" onclick="switchTab('teacher-login')" class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-emerald-700 hover:text-emerald-900">
+          🔑 관리자 재입장
+        </button>
+      </div>
+
+      <!-- Student Form -->
+      <form id="student-form" onsubmit="handleStudentJoin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">이름 또는 닉네임</label>
+          <input type="text" id="student-name" required placeholder="예: 5학년 김독서" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base">
+        </div>
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">선생님이 알려주신 6자리 초대코드</label>
+          <input type="text" id="student-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base sm:text-lg font-mono tracking-widest uppercase">
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+          대나무숲 들어가기 🎋
+        </button>
+      </form>
+
+      <!-- Teacher Create Form -->
+      <form id="teacher-create-form" onsubmit="handleTeacherCreate(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 제목 (학급명)</label>
+          <input type="text" id="teacher-room" required placeholder="예: 5학년 2반 독서 대나무숲" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
+        </div>
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">함께 읽는 책 제목</label>
+          <input type="text" id="teacher-book" required placeholder="예: 수남이의 편지" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
+        </div>
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">선생님 성함</label>
+          <input type="text" id="teacher-name" required placeholder="예: 박선생님" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base">
+        </div>
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리 숫자)</label>
+          <input type="password" id="teacher-password" required maxlength="4" placeholder="예: 1234" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+          새 대나무숲 열기 ✨
+        </button>
+      </form>
+
+      <!-- Teacher Admin Login Form -->
+      <form id="teacher-login-form" onsubmit="handleTeacherLogin(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">방 초대코드 (6자리)</label>
+          <input type="text" id="login-code" required maxlength="6" placeholder="예: B9A2K7" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-base sm:text-lg font-mono tracking-widest uppercase">
+        </div>
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-emerald-800 mb-1">관리자 비밀번호 (4자리)</label>
+          <input type="password" id="login-password" required maxlength="4" placeholder="****" class="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none text-sm sm:text-base font-mono">
+        </div>
+        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-jua py-3.5 rounded-xl text-lg sm:text-xl shadow-md transition">
+          관리자 권한으로 입장 🔑
+        </button>
+      </form>
+    </div>
+
+    <!-- BOARD VIEW -->
+    <div id="board-view" class="hidden space-y-6">
+
+      <!-- Question Input Form Box -->
+      <div class="bg-white/95 rounded-2xl p-5 sm:p-6 shadow-lg border border-emerald-200">
+        <h3 class="text-base sm:text-lg font-jua text-emerald-900 mb-3 flex items-center gap-2">
+          <span>✍️</span> 읽은 단원(쪽수)과 질문 유형을 선택하고 독서 질문을 포스트잇으로 붙여보세요!
+        </h3>
+        <form on
