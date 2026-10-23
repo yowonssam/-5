@@ -202,23 +202,23 @@
         <!-- 1) 쪽수 필터 -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1">
           <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">📖 쪽수 필터:</span>
-          <button onclick="filterBySection('all')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체보기</button>
-          <button onclick="filterBySection('section1')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap">1) 7~42쪽</button>
-          <button onclick="filterBySection('section2')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap">2) 43~84쪽</button>
-          <button onclick="filterBySection('section3')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">3) 85~107쪽</button>
-          <button onclick="filterBySection('section4')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap">4) 108~147쪽</button>
-          <button onclick="filterBySection('section5')" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap">5) 148~170쪽</button>
+          <button onclick="filterBySection('all')" data-sec="all" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체보기</button>
+          <button onclick="filterBySection('section1')" data-sec="section1" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-100 whitespace-nowrap">1) 7~42쪽</button>
+          <button onclick="filterBySection('section2')" data-sec="section2" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-amber-100 whitespace-nowrap">2) 43~84쪽</button>
+          <button onclick="filterBySection('section3')" data-sec="section3" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">3) 85~107쪽</button>
+          <button onclick="filterBySection('section4')" data-sec="section4" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-purple-100 whitespace-nowrap">4) 108~147쪽</button>
+          <button onclick="filterBySection('section5')" data-sec="section5" class="sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-rose-100 whitespace-nowrap">5) 148~170쪽</button>
         </div>
 
         <!-- 2) 질문 유형 필터 -->
         <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-emerald-100">
           <div class="flex items-center gap-2 overflow-x-auto pb-1">
             <span class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap">🏷️ 유형 필터:</span>
-            <button onclick="filterByCategory('all')" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체유형</button>
-            <button onclick="filterByCategory('인물')" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap">🔴 인물의 마음</button>
-            <button onclick="filterByCategory('만약에')" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap">🟢 만약에?</button>
-            <button onclick="filterByCategory('현실')" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">🔵 현실 세계 연결</button>
-            <button onclick="filterByCategory('자유')" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap">🟡 자유 질문</button>
+            <button onclick="filterByCategory('all')" data-cat="all" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap">전체유형</button>
+            <button onclick="filterByCategory('인물')" data-cat="인물" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-red-100 whitespace-nowrap">🔴 인물의 마음</button>
+            <button onclick="filterByCategory('만약에')" data-cat="만약에" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-green-100 whitespace-nowrap">🟢 만약에?</button>
+            <button onclick="filterByCategory('현실')" data-cat="현실" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-blue-100 whitespace-nowrap">🔵 현실 세계 연결</button>
+            <button onclick="filterByCategory('자유')" data-cat="자유" class="cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-yellow-100 whitespace-nowrap">🟡 자유 질문</button>
           </div>
           <div class="text-xs sm:text-sm font-bold text-emerald-900 whitespace-nowrap ml-auto">
             모인 질문 <span id="question-count" class="text-emerald-600 font-mono text-base">0</span>개
@@ -235,7 +235,7 @@
   </main>
 
   <script>
-    // 안심 메모리 스토리지 (localStorage 보안 접근 차단 오류 완벽 예외처리)
+    // 안심 메모리 스토리지 (localStorage 차단 예외 처리)
     var memStorage = {};
     function setStorageItem(key, val) {
       try {
@@ -474,26 +474,32 @@
       });
     }
 
+    // 정확한 매칭을 적용한 쪽수 필터 함수
     function filterBySection(sec) {
       activeSecFilter = sec;
       var btns = document.querySelectorAll('.sec-filter-btn');
       btns.forEach(function(btn) {
-        var isTarget = (sec === 'all' && btn.innerText.includes('전체')) || (sec !== 'all' && btn.innerText.includes(sec.replace('section', '')));
-        btn.className = isTarget 
-          ? 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap'
-          : 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+        var btnSec = btn.getAttribute('data-sec');
+        if (btnSec === sec) {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap';
+        } else {
+          btn.className = 'sec-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+        }
       });
       renderQuestions();
     }
 
+    // 정확한 매칭을 적용한 유형 필터 함수
     function filterByCategory(cat) {
       activeCatFilter = cat;
       var btns = document.querySelectorAll('.cat-filter-btn');
       btns.forEach(function(btn) {
-        var isTarget = (cat === 'all' && btn.innerText.includes('전체')) || (cat !== 'all' && btn.innerText.includes(cat === '인물' ? '인물' : cat === '만약에' ? '만약에' : cat === '현실' ? '현실' : '자유'));
-        btn.className = isTarget 
-          ? 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap'
-          : 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+        var btnCat = btn.getAttribute('data-cat');
+        if (btnCat === cat) {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-emerald-800 text-white whitespace-nowrap';
+        } else {
+          btn.className = 'cat-filter-btn text-xs sm:text-sm px-3 py-1 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-emerald-50 whitespace-nowrap';
+        }
       });
       renderQuestions();
     }
